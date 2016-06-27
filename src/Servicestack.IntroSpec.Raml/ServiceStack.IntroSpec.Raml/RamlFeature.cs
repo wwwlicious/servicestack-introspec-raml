@@ -9,6 +9,7 @@ namespace Servicestack.IntroSpec.Raml
     using Services;
     using ServiceStack;
     using ServiceStack.IntroSpec;
+    using ServiceStack.IntroSpec.Raml;
 
     public class RamlFeature : IPlugin
     {
@@ -17,9 +18,10 @@ namespace Servicestack.IntroSpec.Raml
             if (!appHost.Plugins.Any(p => p is ApiSpecFeature))
                 throw new ArgumentException("The ApiSpecFeature must be enabled to use the RAML Feature");
 
+            RamlFormat.RegisterSerializer(appHost);
             RegisterServices(appHost);
         }
-
+        
         private void RegisterServices(IAppHost appHost)
         {
             var metadataFeature = appHost.GetPlugin<MetadataFeature>();
