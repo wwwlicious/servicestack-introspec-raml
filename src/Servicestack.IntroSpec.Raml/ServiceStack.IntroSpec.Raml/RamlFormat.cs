@@ -6,10 +6,10 @@ namespace ServiceStack.IntroSpec.Raml
 {
     using System;
     using System.IO;
+    using Extensions;
     using Logging;
     using Servicestack.IntroSpec.Raml;
     using Web;
-    using YamlDotNet.RepresentationModel;
     using YamlDotNet.Serialization;
 
     /// <summary>
@@ -34,7 +34,10 @@ namespace ServiceStack.IntroSpec.Raml
                 var serializer = new Serializer();
 
                 using (var writer = new StreamWriter(outputStream))
+                {
+                    writer.WriteLine(requestContext.GetRamlVersion());
                     serializer.Serialize(writer, dto);
+                }
             }
             catch (Exception ex)
             {

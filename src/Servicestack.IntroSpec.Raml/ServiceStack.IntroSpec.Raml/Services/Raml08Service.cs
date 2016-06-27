@@ -6,13 +6,16 @@ namespace Servicestack.IntroSpec.Raml.Services
 {
     using DTO;
     using ServiceStack;
+    using ServiceStack.IntroSpec.Raml.Extensions;
 
 #if !DEBUG
     [CacheResponse(MaxAge = 300, Duration = 600)]
 #endif
-    public class Raml08Service : IService
+    public class Raml08Service : Service
     {
-        [AddHeader(ContentType = Constants.MediaType)]
+        private const string RamlVerison = "#%RAML 0.8";
+
+        [AddHeader(ContentType = Constants.RamlMediaType)]
         public object Get(RamlRequest request)
         {
             return "#%RAML 0.8";
