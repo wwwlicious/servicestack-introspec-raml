@@ -6,7 +6,7 @@ namespace Servicestack.IntroSpec.Raml
 {
     internal class Constants
     {
-        public const string MediaType = "application/raml+yaml";
+        public const string RamlMediaType = "application/raml+yaml";
         public const string DefaultUri = "/spec/raml";
         public const string Version08Uri = "/spec/raml/0.8";
     }

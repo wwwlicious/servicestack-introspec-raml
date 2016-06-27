@@ -9,6 +9,7 @@ namespace ServiceStack.IntroSpec.Raml
     using Logging;
     using Servicestack.IntroSpec.Raml;
     using Web;
+    using YamlDotNet.RepresentationModel;
     using YamlDotNet.Serialization;
 
     /// <summary>
@@ -21,23 +22,24 @@ namespace ServiceStack.IntroSpec.Raml
         public static void RegisterSerializer(IAppHost appHost)
         {
             // NOTE is this the correct SerializationOptions?
-            appHost.ContentTypes.Register(Constants.MediaType, SerializeYaml, null);
+            appHost.ContentTypes.Register(Constants.RamlMediaType, Serialize, null);
         }
 
-        private static void SerializeYaml(IRequest requestContext, object dto, Stream outputStream)
+        private static void Serialize(IRequest requestContext, object dto, Stream outputStream)
         {
             if (dto == null) return;
 
             try
             {
-                var yamlSerializer = new Serializer(SerializationOptions.EmitDefaults);
-                var writer = new StreamWriter(outputStream);
-                yamlSerializer.Serialize(writer, dto);
+                var serializer = new Serializer();
+
+                using (var writer = new StreamWriter(outputStream))
+                    serializer.Serialize(writer, dto);
             }
             catch (Exception ex)
             {
                 Log.Error(
-                    $"Error serialising {dto} to yaml with content type {Constants.MediaType}. Request uri: {requestContext.AbsoluteUri}",
+                    $"Error serialising {dto} to yaml with content type {Constants.RamlMediaType}. Request uri: {requestContext.AbsoluteUri}",
                     ex);
             }
         }
