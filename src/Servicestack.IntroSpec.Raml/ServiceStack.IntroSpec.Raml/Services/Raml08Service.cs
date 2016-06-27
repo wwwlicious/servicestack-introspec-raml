@@ -18,7 +18,8 @@ namespace Servicestack.IntroSpec.Raml.Services
         [AddHeader(ContentType = Constants.RamlMediaType)]
         public object Get(RamlRequest request)
         {
-            return "#%RAML 0.8";
+            Request.SetRamlVersion(RamlVerison);
+            return "test";
         }
     }
 }

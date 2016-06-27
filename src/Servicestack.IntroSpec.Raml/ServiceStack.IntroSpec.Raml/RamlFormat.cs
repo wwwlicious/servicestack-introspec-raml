@@ -25,7 +25,7 @@ namespace ServiceStack.IntroSpec.Raml
             appHost.ContentTypes.Register(Constants.RamlMediaType, Serialize, null);
         }
 
-        private static void Serialize(IRequest requestContext, object dto, Stream outputStream)
+        public static void Serialize(IRequest requestContext, object dto, Stream outputStream)
         {
             if (dto == null) return;
 
@@ -35,7 +35,7 @@ namespace ServiceStack.IntroSpec.Raml
 
                 using (var writer = new StreamWriter(outputStream))
                 {
-                    writer.WriteLine(requestContext.GetRamlVersion());
+                    SetRamlVersion(requestContext, writer);
                     serializer.Serialize(writer, dto);
                 }
             }
@@ -45,6 +45,15 @@ namespace ServiceStack.IntroSpec.Raml
                     $"Error serialising {dto} to yaml with content type {Constants.RamlMediaType}. Request uri: {requestContext.AbsoluteUri}",
                     ex);
             }
+        }
+
+        private static void SetRamlVersion(IRequest requestContext, TextWriter writer)
+        {
+            var ramlVersion = requestContext.GetRamlVersion();
+            if (!string.IsNullOrWhiteSpace(ramlVersion))
+                writer.WriteLine(ramlVersion);
+            else
+                Log.Warn($"Required RAML version not found serialising result for {requestContext.AbsoluteUri}");
         }
     }
 }
