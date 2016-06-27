@@ -51,7 +51,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests
                 result = utf8Bytes.FromUtf8Bytes();
             }
 
-            result.Should().Be("Foo: foo\r\nBar: 99\r\n");
+            result.Should().Be("foo: foo\r\nbar: 99\r\n");
         }
 
         [Fact]
@@ -68,7 +68,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests
                 result = utf8Bytes.FromUtf8Bytes();
             }
 
-            result.Should().Be("#%RAML 0.8\r\nFoo: foo\r\nBar: 99\r\n");
+            result.Should().Be("#%RAML 0.8\r\nfoo: foo\r\nbar: 99\r\n");
         }
     }
 

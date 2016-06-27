@@ -11,6 +11,7 @@ namespace ServiceStack.IntroSpec.Raml
     using Servicestack.IntroSpec.Raml;
     using Web;
     using YamlDotNet.Serialization;
+    using YamlDotNet.Serialization.NamingConventions;
 
     /// <summary>
     /// Adds serialisation support for RAML (yaml) files
@@ -31,7 +32,7 @@ namespace ServiceStack.IntroSpec.Raml
 
             try
             {
-                var serializer = new Serializer();
+                var serializer = new Serializer(namingConvention: new CamelCaseNamingConvention());
 
                 using (var writer = new StreamWriter(outputStream))
                 {
