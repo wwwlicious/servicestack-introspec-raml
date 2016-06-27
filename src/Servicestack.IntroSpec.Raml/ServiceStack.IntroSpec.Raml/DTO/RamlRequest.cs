@@ -6,11 +6,15 @@ namespace Servicestack.IntroSpec.Raml.DTO
 {
     using ServiceStack;
     using ServiceStack.DataAnnotations;
+    using ServiceStack.IntroSpec.DTO;
 
     [Route(Constants.DefaultUri)]
     [Route(Constants.Version08Uri)]
     [Exclude(Feature.Metadata | Feature.ServiceDiscovery)]
-    public class RamlRequest : IReturn<RamlResponse>
+    public class RamlRequest : IReturn<RamlResponse>, IFilterableSpecRequest
     {
+        public string[] DtoNames { get; set; }
+        public string[] Categories { get; set; }
+        public string[] Tags { get; set; }
     }
 }

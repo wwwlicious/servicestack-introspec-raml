@@ -7,6 +7,8 @@ namespace Servicestack.IntroSpec.Raml.Services
     using DTO;
     using ServiceStack;
     using ServiceStack.IntroSpec.Raml.Extensions;
+    using ServiceStack.IntroSpec.Services;
+    using ServiceStack.IntroSpec.Extensions;
 
 #if !DEBUG
     [CacheResponse(MaxAge = 300, Duration = 600)]
@@ -15,11 +17,26 @@ namespace Servicestack.IntroSpec.Raml.Services
     {
         private const string RamlVerison = "#%RAML 0.8";
 
+        private readonly IApiDocumentationProvider documentationProvider;
+
+        public Raml08Service(IApiDocumentationProvider documentationProvider)
+        {
+            documentationProvider.ThrowIfNull(nameof(documentationProvider));
+            this.documentationProvider = documentationProvider;
+        }
+
         [AddHeader(ContentType = Constants.RamlMediaType)]
         public object Get(RamlRequest request)
         {
+            // Get the filtered documentation object
+            var documentation = documentationProvider.GetApiDocumentation().Filter(request);
+
+            // Convert
+            var generator = new RamlCollectionGenerator();
+            var raml = generator.Generate(documentation);
+
             Request.SetRamlVersion(RamlVerison);
-            return "test";
+            return raml;
         }
     }
 }
