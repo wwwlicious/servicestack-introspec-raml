@@ -17,8 +17,8 @@ namespace ServiceStack.IntroSpec.Raml.Models
         public string Version { get; set; }
         public string BaseUri { get; set; }
         public string MediaType { get; set; }
-        public string[] Protocols { get; set; }
-        public string[] Schemas { get; set; }
+        public IEnumerable<string> Protocols { get; set; }
+        public IEnumerable<string> Schemas { get; set; }
         // Uri Parameters
 
         // https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#user-documentation
@@ -46,8 +46,7 @@ namespace ServiceStack.IntroSpec.Raml.Models
         public Dictionary<string, RamlResource> Resources { get; } = new Dictionary<string, RamlResource>();
 
         // Key == name of Uri parameter
-        public Dictionary<string, RamlNamedParameter> UriParameters { get; set; } =
-            new Dictionary<string, RamlNamedParameter>();
+        public Dictionary<string, RamlNamedParameter> UriParameters { get; set; }
 
         // https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#methods
         // Key == method
@@ -59,11 +58,11 @@ namespace ServiceStack.IntroSpec.Raml.Models
         public string Description { get; set; }
 
         // Key == full header name (x-my-header)
-        public NamedParameterMap Headers { get; } = new Dictionary<string, RamlNamedParameter>();
+        public NamedParameterMap Headers { get; set; }
 
         public string[] Protocols { get; set; }
 
-        public NamedParameterMap QueryStrings { get; } = new Dictionary<string, RamlNamedParameter>();
+        public NamedParameterMap QueryStrings { get; set; }
 
         // Body
     }

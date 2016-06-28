@@ -32,7 +32,7 @@ namespace ServiceStack.IntroSpec.Raml
 
             try
             {
-                var serializer = new Serializer(namingConvention: new CamelCaseNamingConvention());
+                var serializer = new Serializer(SerializationOptions.DisableAliases, new CamelCaseNamingConvention());
 
                 using (var writer = new StreamWriter(outputStream))
                 {
