@@ -77,11 +77,7 @@ namespace Servicestack.IntroSpec.Raml
                         
                         ramlResource.UriParameters = GetUriParameters(path, resource, ramlResource, action);
 
-                        var method = new RamlMethod { Description = action.Notes };
-
-                        var hasRequestBody = action.Verb.HasRequestBody();
-                        if (!hasRequestBody)
-                            method.QueryStrings = ProcessQueryStrings(resource, method, ramlResource.UriParameters?.Select(p => p.Key));
+                        var method = GetActionMethod(action, resource, ramlResource);
 
                         ramlResource.Methods.Add(action.Verb.ToLower(), method);
 
@@ -90,6 +86,16 @@ namespace Servicestack.IntroSpec.Raml
                     }
                 }
             }
+        }
+
+        private RamlMethod GetActionMethod(ApiAction action, ApiResourceDocumentation resource, RamlResource ramlResource)
+        {
+            var method = new RamlMethod { Description = action.Notes };
+
+            var hasRequestBody = action.Verb.HasRequestBody();
+            if (!hasRequestBody)
+                method.QueryStrings = ProcessQueryStrings(resource, method, ramlResource.UriParameters?.Select(p => p.Key));
+            return method;
         }
 
         private RamlResource GetRamlResource(RamlSpec ramlSpec, string path, ApiResourceDocumentation resource,
