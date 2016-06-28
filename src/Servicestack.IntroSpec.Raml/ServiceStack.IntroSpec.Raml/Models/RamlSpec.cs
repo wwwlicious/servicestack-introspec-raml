@@ -5,7 +5,7 @@
 namespace ServiceStack.IntroSpec.Raml.Models
 {
     using System.Collections.Generic;
-    using NamedParameterMap = System.Collections.Generic.Dictionary<string, RamlNamedParameter<string>>;
+    using NamedParameterMap = System.Collections.Generic.Dictionary<string, RamlNamedParameter>;
 
     /// <summary>
     /// Represents the basic information for RAML output
@@ -58,18 +58,17 @@ namespace ServiceStack.IntroSpec.Raml.Models
         public string Description { get; set; }
 
         // Key == full header name (x-my-header)
-        public NamedParameterMap Headers { get; } = new Dictionary<string, RamlNamedParameter<string>>();
+        public NamedParameterMap Headers { get; } = new Dictionary<string, RamlNamedParameter>();
 
         public string[] Protocols { get; set; }
 
-        public NamedParameterMap QueryStrings { get; } = new Dictionary<string, RamlNamedParameter<string>>();
+        public NamedParameterMap QueryStrings { get; } = new Dictionary<string, RamlNamedParameter>();
 
         // Body
     }
 
-    // NOTE <T> may not be the best way to handle this
     // TODO Named parameters with multiple types - is that possible in SS?
-    public class RamlNamedParameter<T>
+    public class RamlNamedParameter
     {
         public string DisplayName { get; set; }
         public string Description { get; set; }
@@ -78,11 +77,11 @@ namespace ServiceStack.IntroSpec.Raml.Models
         public string Pattern { get; set; }
         public int MinLength { get; set; }
         public int MaxLength { get; set; }
-        public T Minimum { get; set; }
-        public T Maximum { get; set; }
-        public T Example { get; set; }
+        public object Minimum { get; set; }
+        public object Maximum { get; set; }
+        public object Example { get; set; }
         public bool Repeat { get; set; }
         public bool Required { get; set; }
-        public T Default { get; set; }
+        public object Default { get; set; }
     }
 }

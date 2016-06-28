@@ -4,14 +4,15 @@
 
 namespace Servicestack.IntroSpec.Raml
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Runtime.InteropServices;
     using ServiceStack.IntroSpec.Extensions;
     using ServiceStack.IntroSpec.Models;
     using ServiceStack.IntroSpec.Raml.Extensions;
     using ServiceStack.IntroSpec.Raml.Models;
     using ServiceStack.Logging;
+    using ReflectionExtensions = ServiceStack.ReflectionExtensions;
 
     public class RamlCollectionGenerator
     {
@@ -92,7 +93,7 @@ namespace Servicestack.IntroSpec.Raml
                         var pathParams = path.GetPathParams();
                         if (!pathParams.IsNullOrEmpty())
                         {
-                            ramlResource.UriParameters = new Dictionary<string, RamlNamedParameter<string>>();
+                            ramlResource.UriParameters = new Dictionary<string, RamlNamedParameter>();
                             foreach (var pathParam in pathParams.Distinct())
                             {
                                 // Add path parameters
@@ -110,13 +111,13 @@ namespace Servicestack.IntroSpec.Raml
         }
 
         // TODO handle other types
-        private RamlNamedParameter<string> GenerateNamedParameter(ApiPropertyDocumention property)
+        private RamlNamedParameter GenerateNamedParameter(ApiPropertyDocumention property)
         {
-            var namedParam = new RamlNamedParameter<string>
+            var namedParam = new RamlNamedParameter
             {
                 DisplayName = property.Title,
                 Description = property.Description,
-                Type = FriendlyTypeNames.SafeGet(property.ClrType.ToString(), (string)null)
+                Type = FriendlyTypeNames.SafeGet(property.ClrType.ToString(), (string) null)
             };
 
             if (property.AllowMultiple ?? false)
@@ -133,7 +134,8 @@ namespace Servicestack.IntroSpec.Raml
                 }
                 else if (property.Contraints.Type == ConstraintType.Range)
                 {
-                    // TODO - handle different <T> for RamlNamedParameters
+                    namedParam.Minimum = property.Contraints.Min;
+                    namedParam.Maximum = property.Contraints.Max;
                 }
             }
 
