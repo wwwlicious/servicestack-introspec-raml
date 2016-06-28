@@ -73,10 +73,14 @@ namespace Servicestack.IntroSpec.Raml
                             newResource = true;
                             ramlResource = new RamlResource
                             {
-                                DisplayName = resource.Title
+                                DisplayName = resource.Title,
+                                Description = resource.Description
                             };
                             log.Debug($"Did not find raml resource for path {path} for action {action.Verb} for resource {resource.Title}");
                         }
+
+                        var method = new RamlMethod { Description = action.Notes };
+                        ramlResource.Methods.Add(action.Verb.ToLower(), method);
 
                         if (newResource)
                             ramlSpec.Resources.Add(path, ramlResource);
