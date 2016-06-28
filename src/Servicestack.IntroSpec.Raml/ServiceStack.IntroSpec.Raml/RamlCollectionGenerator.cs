@@ -7,11 +7,15 @@ namespace Servicestack.IntroSpec.Raml
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Text;
+    using ServiceStack;
     using ServiceStack.IntroSpec.Extensions;
     using ServiceStack.IntroSpec.Models;
     using ServiceStack.IntroSpec.Raml.Extensions;
     using ServiceStack.IntroSpec.Raml.Models;
     using ServiceStack.Logging;
+    using ServiceStack.Support.Markdown;
+    using CollectionExtensions = ServiceStack.IntroSpec.Extensions.CollectionExtensions;
     using ReflectionExtensions = ServiceStack.ReflectionExtensions;
 
     public class RamlCollectionGenerator
@@ -91,29 +95,68 @@ namespace Servicestack.IntroSpec.Raml
 
                         // Process path parameters
                         var pathParams = path.GetPathParams();
-                        if (!pathParams.IsNullOrEmpty())
+                        if (!CollectionExtensions.IsNullOrEmpty(pathParams))
                         {
-                            ramlResource.UriParameters = new Dictionary<string, RamlNamedParameter>();
                             foreach (var pathParam in pathParams.Distinct())
                             {
                                 // Add path parameters
                                 // TODO - handle this not being found
                                 var propDetails = resource.Properties.FirstOrDefault(r => r.Id == pathParam);
 
-                                var namedParam = GenerateNamedParameter(propDetails);
+                                var namedParam = GenerateUriParameter(propDetails);
 
                                 ramlResource.UriParameters.Add(pathParam, namedParam);
                             }
                         }
+
+                        ProcessMediaTypeExtensions(ramlResource, action);
                     }
                 }
             }
         }
 
-        // TODO handle other types
-        private RamlNamedParameter GenerateNamedParameter(ApiPropertyDocumention property)
+        /// <summary>
+        /// MediaTypeExtension is a reserved path name which specifies that adding known extension is equivalent of sending accept header
+        /// e.g. appending .json == accept:application/json
+        /// </summary>
+        /// <remarks>see https://github.com/donaldgray/raml-spec/blob/master/versions/raml-08/raml-08.md#template-uris-and-uri-parameters </remarks>
+        private void ProcessMediaTypeExtensions(RamlResource ramlResource, ApiAction action)
         {
-            var namedParam = new RamlNamedParameter
+            const string mediaTypeParam = "MediaTypeExtension";
+            if (ramlResource.UriParameters.ContainsKey(mediaTypeParam)) return;
+
+            var extensions = new Dictionary<string, string>();
+            foreach (var contentType in action.ContentTypes)
+            {
+                try
+                {
+                    // Get friendly name
+                    var extension = MimeTypes.GetExtension(contentType);
+                    if (!extension.Contains(" "))
+                        extensions.Add(contentType, extension);
+
+                    log.Debug($"Found extension {extension} for {contentType}");
+                }
+                catch (NotSupportedException nse)
+                {
+                    log.Error($"Mime Type {contentType} supported not supported.", nse);
+                }
+            }
+
+            if (extensions.IsNullOrEmpty()) return;
+
+            // Generates message like "Use .json to specify application/json or .xml to specify text/xml"
+            var message = string.Concat("Use ",
+                string.Join(" or ", extensions.Select(s => $"{s.Value} to specify {s.Key}")));
+
+            ramlResource.UriParameters.Add(mediaTypeParam,
+                new RamlNamedParameter { Enum = extensions.Select(s => s.Value), Description = message });
+        }
+
+        // TODO handle other types
+        private RamlNamedParameter GenerateUriParameter(ApiPropertyDocumention property)
+        {
+            var uriParameter = new RamlNamedParameter
             {
                 DisplayName = property.Title,
                 Description = property.Description,
@@ -121,25 +164,25 @@ namespace Servicestack.IntroSpec.Raml
             };
 
             if (property.AllowMultiple ?? false)
-                namedParam.Repeat = true;
+                uriParameter.Repeat = true;
 
             if (property.IsRequired ?? false)
-                namedParam.Required = true;
+                uriParameter.Required = true;
 
             if (property.Contraints != null)
             {
                 if (property.Contraints.Type == ConstraintType.List)
                 {
-                    namedParam.Enum = property.Contraints.Values;
+                    uriParameter.Enum = property.Contraints.Values;
                 }
                 else if (property.Contraints.Type == ConstraintType.Range)
                 {
-                    namedParam.Minimum = property.Contraints.Min;
-                    namedParam.Maximum = property.Contraints.Max;
+                    uriParameter.Minimum = property.Contraints.Min;
+                    uriParameter.Maximum = property.Contraints.Max;
                 }
             }
 
-            return namedParam;
+            return uriParameter;
         }
     }
 }

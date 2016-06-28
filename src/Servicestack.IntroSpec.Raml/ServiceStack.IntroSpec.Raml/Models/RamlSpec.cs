@@ -46,7 +46,8 @@ namespace ServiceStack.IntroSpec.Raml.Models
         public Dictionary<string, RamlResource> Resources { get; } = new Dictionary<string, RamlResource>();
 
         // Key == name of Uri parameter
-        public NamedParameterMap UriParameters { get; set; }
+        public Dictionary<string, RamlNamedParameter> UriParameters { get; set; } =
+            new Dictionary<string, RamlNamedParameter>();
 
         // https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#methods
         // Key == method
@@ -73,7 +74,7 @@ namespace ServiceStack.IntroSpec.Raml.Models
         public string DisplayName { get; set; }
         public string Description { get; set; }
         public string Type { get; set; }
-        public string[] Enum { get; set; }
+        public IEnumerable<string> Enum { get; set; }
         public string Pattern { get; set; }
         public int MinLength { get; set; }
         public int MaxLength { get; set; }
