@@ -29,6 +29,7 @@ namespace Servicestack.IntroSpec.Raml.Services
         public object Get(RamlRequest request)
         {
             // Get the filtered documentation object
+            // TODO - Make this an in-proc service call so that it can be overriden
             var documentation = documentationProvider.GetApiDocumentation().Filter(request);
 
             // Convert

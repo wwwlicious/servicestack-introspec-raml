@@ -99,6 +99,7 @@
     <Compile Include="Extensions\RequestExtensionsTests.cs" />
     <Compile Include="Fixtures\AppHostCollection.cs" />
     <Compile Include="Fixtures\AppHostFixture.cs" />
+    <Compile Include="Models\RamlSpecTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RamlFeatureTests.cs" />
     <Compile Include="RamlFormatTests.cs" />

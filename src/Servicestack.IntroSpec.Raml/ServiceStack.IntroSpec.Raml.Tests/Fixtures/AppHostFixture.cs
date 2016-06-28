@@ -5,7 +5,7 @@
 namespace ServiceStack.IntroSpec.Raml.Tests.Fixtures
 {
     using System;
-    using Models;
+    using IntroSpec.Models;
     using Settings;
     using Testing;
 
