@@ -5,7 +5,11 @@
 namespace Servicestack.IntroSpec.Raml
 {
     using System.Collections.Generic;
+    using System.Linq;
+    using System.Runtime.InteropServices;
+    using ServiceStack.IntroSpec.Extensions;
     using ServiceStack.IntroSpec.Models;
+    using ServiceStack.IntroSpec.Raml.Extensions;
     using ServiceStack.IntroSpec.Raml.Models;
     using ServiceStack.Logging;
 
@@ -82,10 +86,58 @@ namespace Servicestack.IntroSpec.Raml
                         ramlResource.Methods.Add(action.Verb.ToLower(), method);
 
                         if (newResource)
-                            ramlSpec.Resources.Add(path, ramlResource);
+                            ramlSpec.Resources.Add(path.EnsureStartsWith("/"), ramlResource);
+
+                        // Process path parameters
+                        var pathParams = path.GetPathParams();
+                        if (!pathParams.IsNullOrEmpty())
+                        {
+                            ramlResource.UriParameters = new Dictionary<string, RamlNamedParameter<string>>();
+                            foreach (var pathParam in pathParams.Distinct())
+                            {
+                                // Add path parameters
+                                // TODO - handle this not being found
+                                var propDetails = resource.Properties.FirstOrDefault(r => r.Id == pathParam);
+
+                                var namedParam = GenerateNamedParameter(propDetails);
+
+                                ramlResource.UriParameters.Add(pathParam, namedParam);
+                            }
+                        }
                     }
                 }
             }
+        }
+
+        // TODO handle other types
+        private RamlNamedParameter<string> GenerateNamedParameter(ApiPropertyDocumention property)
+        {
+            var namedParam = new RamlNamedParameter<string>
+            {
+                DisplayName = property.Title,
+                Description = property.Description,
+                Type = FriendlyTypeNames.SafeGet(property.ClrType.ToString(), (string)null)
+            };
+
+            if (property.AllowMultiple ?? false)
+                namedParam.Repeat = true;
+
+            if (property.IsRequired ?? false)
+                namedParam.Required = true;
+
+            if (property.Contraints != null)
+            {
+                if (property.Contraints.Type == ConstraintType.List)
+                {
+                    namedParam.Enum = property.Contraints.Values;
+                }
+                else if (property.Contraints.Type == ConstraintType.Range)
+                {
+                    // TODO - handle different <T> for RamlNamedParameters
+                }
+            }
+
+            return namedParam;
         }
     }
 }

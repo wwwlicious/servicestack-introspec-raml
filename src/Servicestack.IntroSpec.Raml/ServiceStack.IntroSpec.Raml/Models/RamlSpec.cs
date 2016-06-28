@@ -42,10 +42,11 @@ namespace ServiceStack.IntroSpec.Raml.Models
         public string Description { get; set; }
 
         // https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#resources-and-nested-resources
+        // key = relative path
         public Dictionary<string, RamlResource> Resources { get; } = new Dictionary<string, RamlResource>();
 
-        // Uri Parameters - same logic as postman parameters
-        // Base Uri Parameters
+        // Key == name of Uri parameter
+        public NamedParameterMap UriParameters { get; set; }
 
         // https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#methods
         // Key == method
