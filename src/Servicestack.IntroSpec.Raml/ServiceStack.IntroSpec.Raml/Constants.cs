@@ -9,5 +9,6 @@ namespace Servicestack.IntroSpec.Raml
         public const string RamlMediaType = "application/raml+yaml";
         public const string DefaultUri = "/spec/raml";
         public const string Version08Uri = "/spec/raml/0.8";
+        public const string MediaTypeExtensionKey = "mediaTypeExtension";
     }
 }

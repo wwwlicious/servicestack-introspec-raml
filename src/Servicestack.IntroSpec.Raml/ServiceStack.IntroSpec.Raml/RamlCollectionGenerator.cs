@@ -11,7 +11,6 @@ namespace Servicestack.IntroSpec.Raml
     using ServiceStack;
     using ServiceStack.IntroSpec.Extensions;
     using ServiceStack.IntroSpec.Models;
-    using ServiceStack.IntroSpec.Raml.Extensions;
     using ServiceStack.IntroSpec.Raml.Models;
     using ServiceStack.IntroSpec.Raml.v08;
     using ServiceStack.Logging;
@@ -19,7 +18,6 @@ namespace Servicestack.IntroSpec.Raml
     public class RamlCollectionGenerator
     {
         private readonly ILog log = LogManager.GetLogger(typeof(RamlCollectionGenerator));
-        private const string MediaTypeParam = "mediaTypeExtension";
 
         public Dictionary<string, string> FriendlyTypeNames = new Dictionary<string, string>
         {
@@ -99,7 +97,7 @@ namespace Servicestack.IntroSpec.Raml
         }
 
         // TODO - utility this
-        private bool HasMediaTypeExtension(RamlResource resource) => resource.UriParameters?.ContainsKey(MediaTypeParam) ?? false;
+        private bool HasMediaTypeExtension(RamlResource resource) => resource.UriParameters?.ContainsKey(Constants.MediaTypeExtensionKey) ?? false;
 
         private RamlMethod GetActionMethod(ApiAction action, ApiResourceDocumentation resource, RamlWorkingSet ramlWorkingSet)
         {
@@ -164,7 +162,7 @@ namespace Servicestack.IntroSpec.Raml
         private void ProcessMediaTypeExtensions(ApiAction action, Dictionary<string, RamlNamedParameter> uriParams)
         {
             const string space = " ";
-            if (uriParams.ContainsKey(MediaTypeParam)) return;
+            if (uriParams.ContainsKey(Constants.MediaTypeExtensionKey)) return;
 
             var extensions = new Dictionary<string, string>();
             foreach (var contentType in action.ContentTypes)
@@ -191,7 +189,7 @@ namespace Servicestack.IntroSpec.Raml
                 string.Join(" or ", extensions.Select(s => $"{s.Value} to specify {s.Key}")));
 
             // Create a dummy parameter for mediaTypeExtensions
-            uriParams.Add(MediaTypeParam,
+            uriParams.Add(Constants.MediaTypeExtensionKey,
                 new RamlNamedParameter { Enum = extensions.Select(s => s.Value), Description = message });
         }
 
@@ -215,33 +213,6 @@ namespace Servicestack.IntroSpec.Raml
 
             return data;
         }
-    }
-
-    public class RamlWorkingSet
-    {
-        public string BasePath { get; }
-        public string MediaTypeExtensionPath { get; }
-        public IEnumerable<string> AvailablePaths => new [] { BasePath, MediaTypeExtensionPath };
-
-        private readonly List<RamlParameter> ramlParameters = new List<RamlParameter>();
-        private const string MediaTypeParam = "mediaTypeExtension";
-
-        public RamlWorkingSet(string path)
-        {
-            BasePath = path.EnsureStartsWith("/");
-            MediaTypeExtensionPath = string.Concat(path.TrimEnd('/'), $"{{{MediaTypeParam}}}");
-        }
-
-        public void Add(RamlParameter ramlParameter)
-        {
-            ramlParameters.Add(ramlParameter);
-        }
-
-        public IEnumerable<RamlParameter> PathParams
-            => ramlParameters?.Where(p => p.IsPathParam) ?? Enumerable.Empty<RamlParameter>();
-
-        public IEnumerable<RamlParameter> NonPathParams
-            => ramlParameters?.Where(p => !p.IsPathParam) ?? Enumerable.Empty<RamlParameter>();
     }
 
     public class RamlParameter
