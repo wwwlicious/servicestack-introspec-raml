@@ -68,6 +68,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="v08\Utilities.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DTO\RamlRequest.cs" />
     <Compile Include="DTO\RamlResponse.cs" />

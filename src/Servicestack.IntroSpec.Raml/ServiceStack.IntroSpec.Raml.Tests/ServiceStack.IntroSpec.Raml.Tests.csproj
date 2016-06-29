@@ -105,6 +105,7 @@
     <Compile Include="RamlFeatureTests.cs" />
     <Compile Include="RamlFormatTests.cs" />
     <Compile Include="RamlSpecConverterTests.cs" />
+    <Compile Include="v08\GenerationUtilitiesTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
