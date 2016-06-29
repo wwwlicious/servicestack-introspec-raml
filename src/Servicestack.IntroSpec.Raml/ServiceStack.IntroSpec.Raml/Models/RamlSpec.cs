@@ -21,7 +21,7 @@ namespace ServiceStack.IntroSpec.Raml.Models
         public string MediaType { get; set; }
         public IEnumerable<string> Protocols { get; set; }
         public IEnumerable<string> Schemas { get; set; }
-        
+       
         // Uri Parameters
 
         // https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#user-documentation

@@ -18,6 +18,7 @@ namespace Servicestack.IntroSpec.Raml
     public class RamlCollectionGenerator
     {
         private readonly ILog log = LogManager.GetLogger(typeof(RamlCollectionGenerator));
+        private const string MediaTypeParam = "mediaTypeExtension";
 
         public Dictionary<string, string> FriendlyTypeNames = new Dictionary<string, string>
         {
@@ -69,9 +70,6 @@ namespace Servicestack.IntroSpec.Raml
                     // For each action, go through relative paths
                     foreach (var path in action.RelativePaths)
                     {
-                        // TODO Append need to add {mediaTypeExtension} on to path if it's required
-
-
                         log.Debug($"Processing path {path} for action {action.Verb} for resource {resource.Title}");
 
                         // Check if this path already exists in the map
@@ -85,11 +83,19 @@ namespace Servicestack.IntroSpec.Raml
                         ramlResource.Methods.Add(action.Verb.ToLower(), method);
 
                         if (isNewResource)
-                            ramlSpec.Resources.Add(path.EnsureStartsWith("/"), ramlResource);
+                        {
+                            var resourcePath = path.EnsureStartsWith("/");
+                            if (HasMediaTypeExtension(ramlResource))
+                                resourcePath = string.Concat(resourcePath.TrimEnd('/'), $"{{{MediaTypeParam}}}");
+
+                            ramlSpec.Resources.Add(resourcePath, ramlResource);
+                        }
                     }
                 }
             }
         }
+
+        private bool HasMediaTypeExtension(RamlResource resource) => resource.UriParameters?.ContainsKey(MediaTypeParam) ?? false;
 
         private RamlMethod GetActionMethod(ApiAction action, ApiResourceDocumentation resource, RamlResource ramlResource)
         {
@@ -97,7 +103,7 @@ namespace Servicestack.IntroSpec.Raml
 
             var hasRequestBody = action.Verb.HasRequestBody();
             if (!hasRequestBody)
-                method.QueryParameters = ProcessQueryStrings(resource, method, ramlResource.UriParameters?.Select(p => p.Key));
+                method.QueryParameters = ProcessQueryStrings(resource, ramlResource.UriParameters?.Select(p => p.Key));
             return method;
         }
 
@@ -108,6 +114,8 @@ namespace Servicestack.IntroSpec.Raml
             newResource = false;
             if (ramlSpec.Resources.TryGetValue(path, out ramlResource))
                 log.Debug($"Found raml resource for path {path}");
+            else if (ramlSpec.Resources.TryGetValue(string.Concat(path.EnsureStartsWith("/").TrimEnd('/'), $"{{{MediaTypeParam}}}"), out ramlResource))
+                log.Debug($"Found raml resource for path {string.Concat(path.EnsureStartsWith("/").TrimEnd('/'), $"{{{MediaTypeParam}}}")}");
             else
             {
                 newResource = true;
@@ -121,17 +129,21 @@ namespace Servicestack.IntroSpec.Raml
             return ramlResource;
         }
 
-        private Dictionary<string, RamlNamedParameter> GetUriParameters(string path, ApiResourceDocumentation resource, RamlResource ramlResource, ApiAction action)
+        private Dictionary<string, RamlNamedParameter> GetUriParameters(string path, ApiResourceDocumentation resource,
+            RamlResource ramlResource, ApiAction action)
         {
             // Process path parameters
             var pathParams = path.GetPathParams();
-            if (pathParams.IsNullOrEmpty() || resource.Properties.IsNullOrEmpty()) return null;
-
             var uriParams = ramlResource.UriParameters ?? new Dictionary<string, RamlNamedParameter>();
+
             foreach (var pathParam in pathParams.Distinct())
             {
-                // TODO - handle this not being found
                 var propDetails = resource.Properties.FirstOrDefault(r => r.Id == pathParam);
+                if (propDetails == null)
+                {
+                    log.Info($"Path Parameter {pathParam} not found for {resource.Title}");
+                    continue;
+                }
 
                 var namedParam = GenerateUriParameter(propDetails);
 
@@ -143,7 +155,7 @@ namespace Servicestack.IntroSpec.Raml
             return uriParams;
         }
 
-        private Dictionary<string, RamlNamedParameter> ProcessQueryStrings(ApiResourceDocumentation resource, RamlMethod method, IEnumerable<string> uriParamNames)
+        private Dictionary<string, RamlNamedParameter> ProcessQueryStrings(ApiResourceDocumentation resource, IEnumerable<string> uriParamNames)
         {
             if (resource.Properties.IsNullOrEmpty()) return null;
 
@@ -170,8 +182,8 @@ namespace Servicestack.IntroSpec.Raml
         /// <remarks>see https://github.com/donaldgray/raml-spec/blob/master/versions/raml-08/raml-08.md#template-uris-and-uri-parameters </remarks>
         private void ProcessMediaTypeExtensions(ApiAction action, Dictionary<string, RamlNamedParameter> uriParams)
         {
-            const string mediaTypeParam = "mediaTypeExtension";
-            if (uriParams.ContainsKey(mediaTypeParam)) return;
+            const string space = " ";
+            if (uriParams.ContainsKey(MediaTypeParam)) return;
 
             var extensions = new Dictionary<string, string>();
             foreach (var contentType in action.ContentTypes)
@@ -180,14 +192,14 @@ namespace Servicestack.IntroSpec.Raml
                 {
                     // Get friendly name
                     var extension = MimeTypes.GetExtension(contentType);
-                    if (!extension.Contains(" "))
+                    if (!extension.Contains(space))
                         extensions.Add(contentType, extension);
 
                     log.Debug($"Found extension {extension} for {contentType}");
                 }
                 catch (NotSupportedException nse)
                 {
-                    log.Error($"Mime Type {contentType} supported not supported.", nse);
+                    log.Warn($"Mime Type {contentType} not supported.", nse);
                 }
             }
 
@@ -197,7 +209,7 @@ namespace Servicestack.IntroSpec.Raml
             var message = string.Concat("Use ",
                 string.Join(" or ", extensions.Select(s => $"{s.Value} to specify {s.Key}")));
 
-            uriParams.Add(mediaTypeParam,
+            uriParams.Add(MediaTypeParam,
                 new RamlNamedParameter { Enum = extensions.Select(s => s.Value), Description = message });
         }
 
@@ -235,4 +247,6 @@ namespace Servicestack.IntroSpec.Raml
             return uriParameter;
         }
     }
+
+
 }
