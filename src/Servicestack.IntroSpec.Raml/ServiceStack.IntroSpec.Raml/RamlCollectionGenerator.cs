@@ -80,7 +80,7 @@ namespace Servicestack.IntroSpec.Raml
                         
                         ramlResource.UriParameters = GetUriParameters(ramlResource, action, workingSet);
 
-                        var method = GetActionMethod(action, resource, ramlResource);
+                        var method = GetActionMethod(action, resource, workingSet);
 
                         ramlResource.Methods.Add(action.Verb.ToLower(), method);
 
@@ -100,13 +100,13 @@ namespace Servicestack.IntroSpec.Raml
         // TODO - utility this
         private bool HasMediaTypeExtension(RamlResource resource) => resource.UriParameters?.ContainsKey(MediaTypeParam) ?? false;
 
-        private RamlMethod GetActionMethod(ApiAction action, ApiResourceDocumentation resource, RamlResource ramlResource)
+        private RamlMethod GetActionMethod(ApiAction action, ApiResourceDocumentation resource, WorkingSet workingSet)
         {
             var method = new RamlMethod { Description = action.Notes };
 
             var hasRequestBody = action.Verb.HasRequestBody();
             if (!hasRequestBody)
-                method.QueryParameters = ProcessQueryStrings(resource, ramlResource.UriParameters?.Select(p => p.Key));
+                method.QueryParameters = ProcessQueryStrings(resource, workingSet);
             return method;
         }
 
@@ -149,24 +149,10 @@ namespace Servicestack.IntroSpec.Raml
             return uriParams;
         }
 
-        private Dictionary<string, RamlNamedParameter> ProcessQueryStrings(ApiResourceDocumentation resource, IEnumerable<string> uriParamNames)
+        private Dictionary<string, RamlNamedParameter> ProcessQueryStrings(ApiResourceDocumentation resource, WorkingSet workingSet)
         {
             if (resource.Properties.IsNullOrEmpty()) return null;
-
-            if (uriParamNames.IsNullOrEmpty())
-                uriParamNames = Enumerable.Empty<string>();
-
-            var queryStrings = new Dictionary<string, RamlNamedParameter>();
-            
-            // Iterate through all params that weren't UriParameters
-            foreach (var param in resource.Properties.Where(p => !uriParamNames.Contains(p.Id)))
-            {
-                var namedParam = GenerateUriParameter(param);
-
-                queryStrings.Add(param.Id, namedParam);
-            }
-
-            return queryStrings;
+            return workingSet.NonPathParams.ToDictionary(param => param.Key, param => param.NamedParam);
         }
 
         /// <summary>
