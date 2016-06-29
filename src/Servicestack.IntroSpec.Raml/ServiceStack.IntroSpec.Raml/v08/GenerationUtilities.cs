@@ -4,11 +4,14 @@
 
 namespace ServiceStack.IntroSpec.Raml.v08
 {
+    using System;
     using System.Collections.Generic;
+    using System.Linq;
     using IntroSpec.Extensions;
     using IntroSpec.Models;
     using Logging;
     using Models;
+    using Servicestack.IntroSpec.Raml;
 
     public class GenerationUtilities
     { 
@@ -61,6 +64,29 @@ namespace ServiceStack.IntroSpec.Raml.v08
             }
 
             return uriParameter;
+        }
+
+        public static RamlWorkingSet GenerateWorkingSet(string path, ApiResourceDocumentation resource)
+        {
+            path.ThrowIfNullOrEmpty(nameof(path));
+            resource.ThrowIfNull(nameof(resource));
+
+            var data = new RamlWorkingSet(path);
+
+            var pathParams = path.GetPathParams() ?? Enumerable.Empty<string>();
+
+            foreach (var property in resource.Properties ?? Enumerable.Empty<ApiPropertyDocumention>())
+            {
+                var isUriParam = pathParams.Contains(property.Id, StringComparer.OrdinalIgnoreCase);
+                var typeName = FriendlyTypeNames.SafeGet(property.ClrType.Name, (string)null);
+
+                var namedParam = GenerateUriParameter(property);
+
+                var ramlParam = RamlWorkingParameter.Create(property.Id, typeName, isUriParam, namedParam);
+                data.Add(ramlParam);
+            }
+
+            return data;
         }
     }
 }

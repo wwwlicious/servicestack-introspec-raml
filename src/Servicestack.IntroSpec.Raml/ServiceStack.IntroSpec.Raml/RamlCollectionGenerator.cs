@@ -19,19 +19,6 @@ namespace Servicestack.IntroSpec.Raml
     {
         private readonly ILog log = LogManager.GetLogger(typeof(RamlCollectionGenerator));
 
-        public Dictionary<string, string> FriendlyTypeNames = new Dictionary<string, string>
-        {
-            { "String", "string" },
-            { "Int64", "number" },
-            { "Double", "number" },
-            { "Float", "number" },
-            { "Int16", "integer" },
-            { "Int32", "integer" },
-            { "Single", "number" },
-            { "DateTime", "date" },
-            { "Boolean", "boolean" }
-        };
-
         public RamlSpec Generate(ApiDocumentation documentation)
         {
             var stopwatch = new Stopwatch();
@@ -69,7 +56,7 @@ namespace Servicestack.IntroSpec.Raml
                     // For each action, go through relative paths
                     foreach (var path in action.RelativePaths)
                     {
-                        var workingSet = PreProcess(path, resource);
+                        var workingSet = GenerationUtilities.GenerateWorkingSet(path, resource);
 
                         log.Debug($"Processing path {path} for action {action.Verb} for resource {resource.Title}");
 
@@ -191,27 +178,6 @@ namespace Servicestack.IntroSpec.Raml
             // Create a dummy parameter for mediaTypeExtensions
             uriParams.Add(Constants.MediaTypeExtensionKey,
                 new RamlNamedParameter { Enum = extensions.Select(s => s.Value), Description = message });
-        }
-
-        // TODO - pull this out to a utilities class for testing
-        public RamlWorkingSet PreProcess(string path, ApiResourceDocumentation resource)
-        {
-            var data = new RamlWorkingSet(path);
-
-            var pathParams = path.GetPathParams();
-
-            foreach (var property in resource.Properties)
-            {
-                var isUriParam = pathParams.Contains(property.Id, StringComparer.OrdinalIgnoreCase);
-                var typeName = FriendlyTypeNames.SafeGet(property.ClrType.Name, (string) null);
-
-                var namedParam = GenerationUtilities.GenerateUriParameter(property);
-
-                var ramlParam = RamlWorkingParameter.Create(property.Id, typeName, isUriParam, namedParam);
-                data.Add(ramlParam);
-            }
-
-            return data;
         }
     }
 }

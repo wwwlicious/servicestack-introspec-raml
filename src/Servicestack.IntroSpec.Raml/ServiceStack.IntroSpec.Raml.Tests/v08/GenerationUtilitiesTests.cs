@@ -5,6 +5,7 @@
 namespace ServiceStack.IntroSpec.Raml.Tests.v08
 {
     using System;
+    using System.Linq;
     using FluentAssertions;
     using IntroSpec.Models;
     using Raml.v08;
@@ -120,6 +121,49 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
             result.Enum.Should().BeNullOrEmpty();
             result.Minimum.Should().Be(min);
             result.Maximum.Should().Be(max);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        public void GenerateWorkingSet_Throws_IfPathNullOrEmpty(string path)
+        {
+            Action action = () => GenerationUtilities.GenerateWorkingSet(path, new ApiResourceDocumentation());
+            action.ShouldThrow<ArgumentException>().WithMessage("Value cannot be null.\r\nParameter name: path");
+        }
+
+        [Fact]
+        public void GenerateWorkingSet_Throws_IfResourceNull()
+        {
+            Action action = () => GenerationUtilities.GenerateWorkingSet("/api", null);
+            action.ShouldThrow<ArgumentException>().WithMessage("Value cannot be null.\r\nParameter name: resource");
+        }
+
+        [Fact]
+        public void GenerateWorkingSet_HandlesNoProperties()
+        {
+            var ws = GenerationUtilities.GenerateWorkingSet("/api", new ApiResourceDocumentation());
+            ws.PathParams.Should().BeEmpty();
+            ws.NonPathParams.Should().BeEmpty();
+        }
+
+        [Theory]
+        [InlineData("/api")]
+        [InlineData("/api/{pathParam}")]
+        [InlineData("/api/{pathParam1}/{pathParam2}")]
+        public void GenerateWorkingSet_AddsParameterPerProperty(string path)
+        {
+            var ws = GenerationUtilities.GenerateWorkingSet(path,
+                new ApiResourceDocumentation
+                {
+                    Properties =
+                        new[]
+                        {
+                            new ApiPropertyDocumention { ClrType = typeof(string) },
+                            new ApiPropertyDocumention { ClrType = typeof(string) }
+                        }
+                });
+            (ws.PathParams.Count() + ws.NonPathParams.Count()).Should().Be(2);
         }
     }
 }
