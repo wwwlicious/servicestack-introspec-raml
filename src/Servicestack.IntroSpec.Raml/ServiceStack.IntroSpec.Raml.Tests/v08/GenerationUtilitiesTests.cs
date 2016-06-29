@@ -5,9 +5,11 @@
 namespace ServiceStack.IntroSpec.Raml.Tests.v08
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using FluentAssertions;
     using IntroSpec.Models;
+    using Raml.Models;
     using Raml.v08;
     using Xunit;
 
@@ -164,6 +166,56 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
                         }
                 });
             (ws.PathParams.Count() + ws.NonPathParams.Count()).Should().Be(2);
+        }
+
+        [Fact]
+        public void HasMediaTypeExtension_False_IfResourceNull()
+        {
+            RamlResource resource = null;
+            resource.HasMediaTypeExtension().Should().BeFalse();
+        }
+
+        [Fact]
+        public void HasMediaTypeExtension_False_IfUriParametersNull()
+        {
+            var resource = new RamlResource { UriParameters = null };
+            resource.HasMediaTypeExtension().Should().BeFalse();
+        }
+
+        [Fact]
+        public void HasMediaTypeExtension_False_IfUriParametersEmpty()
+        {
+            var resource = new RamlResource { UriParameters = new Dictionary<string, RamlNamedParameter>() };
+            resource.HasMediaTypeExtension().Should().BeFalse();
+        }
+
+
+        [Fact]
+        public void HasMediaTypeExtension_False_IfNoMediaTypeExtensionParam()
+        {
+            var resource = new RamlResource
+            {
+                UriParameters = new Dictionary<string, RamlNamedParameter>
+                {
+                    { "Foo", new RamlNamedParameter() },
+                    { "Bar", new RamlNamedParameter() }
+                }
+            };
+            resource.HasMediaTypeExtension().Should().BeFalse();
+        }
+
+        [Fact]
+        public void HasMediaTypeExtension_True_IfMediaTypeExtensionParam()
+        {
+            var resource = new RamlResource
+            {
+                UriParameters = new Dictionary<string, RamlNamedParameter>
+                {
+                    { "Foo", new RamlNamedParameter() },
+                    { "mediaTypeExtension", new RamlNamedParameter() }
+                }
+            };
+            resource.HasMediaTypeExtension().Should().BeTrue();
         }
     }
 }

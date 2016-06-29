@@ -13,8 +13,8 @@ namespace ServiceStack.IntroSpec.Raml.v08
     using Models;
     using Servicestack.IntroSpec.Raml;
 
-    public class GenerationUtilities
-    { 
+    public static class GenerationUtilities
+    {
         private static readonly ILog log = LogManager.GetLogger(typeof(GenerationUtilities));
 
         public static Dictionary<string, string> FriendlyTypeNames = new Dictionary<string, string>
@@ -38,7 +38,7 @@ namespace ServiceStack.IntroSpec.Raml.v08
             {
                 DisplayName = property.Title,
                 Description = property.Description,
-                Type = FriendlyTypeNames.SafeGet(property.ClrType.Name, (string)null) // TODO handle other types
+                Type = FriendlyTypeNames.SafeGet(property.ClrType.Name, (string) null) // TODO handle other types
             };
 
             if (property.AllowMultiple ?? false)
@@ -78,7 +78,7 @@ namespace ServiceStack.IntroSpec.Raml.v08
             foreach (var property in resource.Properties ?? Enumerable.Empty<ApiPropertyDocumention>())
             {
                 var isUriParam = pathParams.Contains(property.Id, StringComparer.OrdinalIgnoreCase);
-                var typeName = FriendlyTypeNames.SafeGet(property.ClrType.Name, (string)null);
+                var typeName = FriendlyTypeNames.SafeGet(property.ClrType.Name, (string) null);
 
                 var namedParam = GenerateUriParameter(property);
 
@@ -87,6 +87,14 @@ namespace ServiceStack.IntroSpec.Raml.v08
             }
 
             return data;
+        }
+
+        public static bool HasMediaTypeExtension(this RamlResource resource)
+        {
+            if ((resource == null) || resource.UriParameters.IsNullOrEmpty())
+                return false;
+
+            return resource.UriParameters.ContainsKey(Constants.MediaTypeExtensionKey);
         }
     }
 }

@@ -72,7 +72,7 @@ namespace Servicestack.IntroSpec.Raml
 
                         if (isNewResource)
                         {
-                            var resourcePath = HasMediaTypeExtension(ramlResource)
+                            var resourcePath = ramlResource.HasMediaTypeExtension()
                                                    ? workingSet.MediaTypeExtensionPath 
                                                    : workingSet.BasePath;
 
@@ -82,9 +82,6 @@ namespace Servicestack.IntroSpec.Raml
                 }
             }
         }
-
-        // TODO - utility this
-        private bool HasMediaTypeExtension(RamlResource resource) => resource.UriParameters?.ContainsKey(Constants.MediaTypeExtensionKey) ?? false;
 
         private RamlMethod GetActionMethod(ApiAction action, ApiResourceDocumentation resource, RamlWorkingSet ramlWorkingSet)
         {
