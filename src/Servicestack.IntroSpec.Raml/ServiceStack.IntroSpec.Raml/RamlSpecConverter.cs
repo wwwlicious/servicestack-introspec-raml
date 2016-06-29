@@ -10,9 +10,25 @@ namespace ServiceStack.IntroSpec.Raml
 
     public static class RamlSpecConverter
     {
+        /// <summary>
+        /// Convert the RamlSpec object into a Dictionary to make serialization easier.
+        /// </summary>
+        /// <remarks></remarks>
+        /// <param name="spec">RamlSpec object to be populated needs Resources as keys, not Resource : Key  e.g. 
+        /// /api/foo :
+        /// /api/bar :
+        /// Rather than
+        /// resources:
+        ///   /api/foo :
+        ///   /api/bar :
+        /// </param>
+        /// <returns></returns>
         public static Dictionary<string, object> ConvertToSerializableDictionary(this RamlSpec spec)
         {
             var output = new Dictionary<string, object>();
+
+            if (spec == null) return output;
+
             var props = typeof(RamlSpec).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
             var resourcesType = typeof(Dictionary<string, RamlResource>);

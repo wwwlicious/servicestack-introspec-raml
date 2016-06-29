@@ -69,6 +69,9 @@ namespace Servicestack.IntroSpec.Raml
                     // For each action, go through relative paths
                     foreach (var path in action.RelativePaths)
                     {
+                        // TODO Append need to add {mediaTypeExtension} on to path if it's required
+
+
                         log.Debug($"Processing path {path} for action {action.Verb} for resource {resource.Title}");
 
                         // Check if this path already exists in the map
@@ -132,7 +135,7 @@ namespace Servicestack.IntroSpec.Raml
 
                 var namedParam = GenerateUriParameter(propDetails);
 
-                uriParams.Add(pathParam.ToCamelCase(), namedParam);
+                uriParams.Add(pathParam, namedParam);
             }
 
             ProcessMediaTypeExtensions(action, uriParams);
