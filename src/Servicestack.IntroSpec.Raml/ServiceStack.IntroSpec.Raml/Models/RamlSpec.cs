@@ -5,6 +5,8 @@
 namespace ServiceStack.IntroSpec.Raml.Models
 {
     using System.Collections.Generic;
+    using IntroSpec.Extensions;
+    using YamlDotNet.Serialization;
     using NamedParameterMap = System.Collections.Generic.Dictionary<string, RamlNamedParameter>;
 
     /// <summary>
@@ -19,6 +21,7 @@ namespace ServiceStack.IntroSpec.Raml.Models
         public string MediaType { get; set; }
         public IEnumerable<string> Protocols { get; set; }
         public IEnumerable<string> Schemas { get; set; }
+        
         // Uri Parameters
 
         // https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#user-documentation
@@ -26,6 +29,12 @@ namespace ServiceStack.IntroSpec.Raml.Models
 
         // https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#resources-and-nested-resources
         public Dictionary<string, RamlResource> Resources { get; } = new Dictionary<string, RamlResource>();
+
+        public Dictionary<string, RamlResourceType> ResourceTypes { get; set; }
+
+        public Dictionary<string, RamlResourceType> Traits { get; set; }
+
+        // TODO SecuritySchemes
     }
 
     public class RamlDocumentation
@@ -43,28 +52,40 @@ namespace ServiceStack.IntroSpec.Raml.Models
 
         // https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#resources-and-nested-resources
         // key = relative path
-        public Dictionary<string, RamlResource> Resources { get; } = new Dictionary<string, RamlResource>();
+        public Dictionary<string, RamlResource> Resources { get; set; } = new Dictionary<string, RamlResource>();
 
         // Key == name of Uri parameter
         public Dictionary<string, RamlNamedParameter> UriParameters { get; set; }
 
         // https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#methods
         // Key == method
+        [YamlIgnore]
         public Dictionary<string, RamlMethod> Methods { get; } = new Dictionary<string, RamlMethod>();
+
+        public RamlMethod Get => Methods.SafeGet("get", (RamlMethod)null);
+        public RamlMethod Post => Methods.SafeGet("post", (RamlMethod)null);
+        public RamlMethod Put => Methods.SafeGet("put", (RamlMethod)null);
+        public RamlMethod Delete => Methods.SafeGet("delete", (RamlMethod)null);
+        public RamlMethod Options => Methods.SafeGet("options", (RamlMethod)null);
+        public RamlMethod Head => Methods.SafeGet("head", (RamlMethod)null);
+        public RamlMethod Patch => Methods.SafeGet("patch", (RamlMethod)null);
+        public RamlMethod Trace => Methods.SafeGet("trace", (RamlMethod)null);
+        public RamlMethod Connect => Methods.SafeGet("connect", (RamlMethod)null);
     }
 
     public class RamlMethod
     {
         public string Description { get; set; }
 
-        // Key == full header name (x-my-header)
-        public NamedParameterMap Headers { get; set; }
-
         public string[] Protocols { get; set; }
 
-        public NamedParameterMap QueryStrings { get; set; }
+        public NamedParameterMap QueryParameters { get; set; }
 
-        // Body
+        // TODO Body
+        // TODO Responses
+        // TODO Headers
+        // Key == full header name (x-my-header)
+        public NamedParameterMap Headers { get; set; }
     }
 
     // TODO Named parameters with multiple types - is that possible in SS?
@@ -83,5 +104,19 @@ namespace ServiceStack.IntroSpec.Raml.Models
         public bool Repeat { get; set; }
         public bool Required { get; set; }
         public object Default { get; set; }
+    }
+
+    // https://github.com/donaldgray/raml-spec/blob/master/versions/raml-08/raml-08.md#resource-types-and-traits
+    public class RamlTrait : RamlMethod
+    {
+        public string Usage { get; set; }
+        public string Description { get; set; }
+    }
+
+    // https://github.com/donaldgray/raml-spec/blob/master/versions/raml-08/raml-08.md#resource-types-and-traits
+    public class RamlResourceType : RamlResource
+    {
+        public string Usage { get; set; }
+        public string Description { get; set; }
     }
 }

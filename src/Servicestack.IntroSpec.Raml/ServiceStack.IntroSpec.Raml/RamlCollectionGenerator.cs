@@ -94,7 +94,7 @@ namespace Servicestack.IntroSpec.Raml
 
             var hasRequestBody = action.Verb.HasRequestBody();
             if (!hasRequestBody)
-                method.QueryStrings = ProcessQueryStrings(resource, method, ramlResource.UriParameters?.Select(p => p.Key));
+                method.QueryParameters = ProcessQueryStrings(resource, method, ramlResource.UriParameters?.Select(p => p.Key));
             return method;
         }
 
@@ -132,7 +132,7 @@ namespace Servicestack.IntroSpec.Raml
 
                 var namedParam = GenerateUriParameter(propDetails);
 
-                uriParams.Add(pathParam, namedParam);
+                uriParams.Add(pathParam.ToCamelCase(), namedParam);
             }
 
             ProcessMediaTypeExtensions(action, uriParams);
@@ -167,7 +167,7 @@ namespace Servicestack.IntroSpec.Raml
         /// <remarks>see https://github.com/donaldgray/raml-spec/blob/master/versions/raml-08/raml-08.md#template-uris-and-uri-parameters </remarks>
         private void ProcessMediaTypeExtensions(ApiAction action, Dictionary<string, RamlNamedParameter> uriParams)
         {
-            const string mediaTypeParam = "MediaTypeExtension";
+            const string mediaTypeParam = "mediaTypeExtension";
             if (uriParams.ContainsKey(mediaTypeParam)) return;
 
             var extensions = new Dictionary<string, string>();
