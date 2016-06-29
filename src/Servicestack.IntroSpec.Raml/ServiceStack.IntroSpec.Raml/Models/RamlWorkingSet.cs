@@ -19,8 +19,10 @@ namespace ServiceStack.IntroSpec.Raml.Models
 
         public RamlWorkingSet(string path)
         {
+            path.ThrowIfNullOrEmpty(nameof(path));
+
             BasePath = path.EnsureStartsWith("/");
-            MediaTypeExtensionPath = string.Concat(path.TrimEnd('/'), $"{{{Constants.MediaTypeExtensionKey}}}");
+            MediaTypeExtensionPath = string.Concat(BasePath.TrimEnd('/'), $"{{{Constants.MediaTypeExtensionKey}}}");
         }
 
         public void Add(RamlParameter ramlParameter)
