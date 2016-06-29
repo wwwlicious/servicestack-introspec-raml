@@ -15,7 +15,7 @@ namespace ServiceStack.IntroSpec.Raml.Models
         public string MediaTypeExtensionPath { get; }
         public IEnumerable<string> AvailablePaths => new [] { BasePath, MediaTypeExtensionPath };
 
-        private readonly List<RamlParameter> ramlParameters = new List<RamlParameter>();
+        private readonly List<RamlWorkingParameter> ramlParameters = new List<RamlWorkingParameter>();
 
         public RamlWorkingSet(string path)
         {
@@ -25,15 +25,15 @@ namespace ServiceStack.IntroSpec.Raml.Models
             MediaTypeExtensionPath = string.Concat(BasePath.TrimEnd('/'), $"{{{Constants.MediaTypeExtensionKey}}}");
         }
 
-        public void Add(RamlParameter ramlParameter)
+        public void Add(RamlWorkingParameter ramlParameter)
         {
             ramlParameters.Add(ramlParameter);
         }
 
-        public IEnumerable<RamlParameter> PathParams
-            => ramlParameters?.Where(p => p.IsPathParam) ?? Enumerable.Empty<RamlParameter>();
+        public IEnumerable<RamlWorkingParameter> PathParams
+            => ramlParameters?.Where(p => p.IsPathParam) ?? Enumerable.Empty<RamlWorkingParameter>();
 
-        public IEnumerable<RamlParameter> NonPathParams
-            => ramlParameters?.Where(p => !p.IsPathParam) ?? Enumerable.Empty<RamlParameter>();
+        public IEnumerable<RamlWorkingParameter> NonPathParams
+            => ramlParameters?.Where(p => !p.IsPathParam) ?? Enumerable.Empty<RamlWorkingParameter>();
     }
 }

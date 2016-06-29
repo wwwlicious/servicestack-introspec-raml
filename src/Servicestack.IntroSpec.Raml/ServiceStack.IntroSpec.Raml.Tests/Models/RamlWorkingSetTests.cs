@@ -52,9 +52,9 @@ namespace ServiceStack.IntroSpec.Raml.Tests.Models
         [Fact]
         public void PathParams_ReturnsPathParams()
         {
-            var param = RamlParameter.Create("key", "type", true, null);
-            var param2 = RamlParameter.Create("key", "type", true, null);
-            var param3 = RamlParameter.Create("key", "type", false, null);
+            var param = RamlWorkingParameter.Create("key", "type", true, null);
+            var param2 = RamlWorkingParameter.Create("key", "type", true, null);
+            var param3 = RamlWorkingParameter.Create("key", "type", false, null);
 
             var workingSet = new RamlWorkingSet("/path");
             workingSet.Add(param);
@@ -67,9 +67,9 @@ namespace ServiceStack.IntroSpec.Raml.Tests.Models
         [Fact]
         public void PathParams_ReturnsNonPathParams()
         {
-            var param = RamlParameter.Create("key", "type", true, null);
-            var param2 = RamlParameter.Create("key", "type", false, null);
-            var param3 = RamlParameter.Create("key", "type", false, null);
+            var param = RamlWorkingParameter.Create("key", "type", true, null);
+            var param2 = RamlWorkingParameter.Create("key", "type", false, null);
+            var param3 = RamlWorkingParameter.Create("key", "type", false, null);
 
             var workingSet = new RamlWorkingSet("/path");
             workingSet.Add(param);

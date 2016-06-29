@@ -207,32 +207,11 @@ namespace Servicestack.IntroSpec.Raml
 
                 var namedParam = GenerationUtilities.GenerateUriParameter(property);
 
-                var ramlParam = RamlParameter.Create(property.Id, typeName, isUriParam, namedParam);
+                var ramlParam = RamlWorkingParameter.Create(property.Id, typeName, isUriParam, namedParam);
                 data.Add(ramlParam);
             }
 
             return data;
-        }
-    }
-
-    public class RamlParameter
-    {
-        public string Key { get; private set; }
-        public string Type { get; private set; }
-        public bool IsPathParam { get; private set; }
-        public string Value { get; set; } // TODO - vary this value depending on the type? Make it RamlParameter<T>?
-        public RamlNamedParameter NamedParam { get; set; }
-
-        public static RamlParameter Create(string key, string type, bool isPathParam, RamlNamedParameter namedParam)
-        {
-            return new RamlParameter
-            {
-                Key = key,
-                Type = type,
-                IsPathParam = isPathParam,
-                Value = $"val-{type}",
-                NamedParam = namedParam
-            };
         }
     }
 }
