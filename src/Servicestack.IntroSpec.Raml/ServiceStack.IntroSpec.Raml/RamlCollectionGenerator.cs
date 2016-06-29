@@ -70,13 +70,15 @@ namespace Servicestack.IntroSpec.Raml
                     // For each action, go through relative paths
                     foreach (var path in action.RelativePaths)
                     {
+                        var workingSet = PreProcess(path, resource);
+
                         log.Debug($"Processing path {path} for action {action.Verb} for resource {resource.Title}");
 
                         // Check if this path already exists in the map
                         bool isNewResource;
-                        var ramlResource = GetRamlResource(ramlSpec, path, resource, out isNewResource);
+                        var ramlResource = GetRamlResource(ramlSpec, workingSet, resource, out isNewResource);
                         
-                        ramlResource.UriParameters = GetUriParameters(path, resource, ramlResource, action);
+                        ramlResource.UriParameters = GetUriParameters(ramlResource, action, workingSet);
 
                         var method = GetActionMethod(action, resource, ramlResource);
 
@@ -84,9 +86,9 @@ namespace Servicestack.IntroSpec.Raml
 
                         if (isNewResource)
                         {
-                            var resourcePath = path.EnsureStartsWith("/");
-                            if (HasMediaTypeExtension(ramlResource))
-                                resourcePath = string.Concat(resourcePath.TrimEnd('/'), $"{{{MediaTypeParam}}}");
+                            var resourcePath = HasMediaTypeExtension(ramlResource)
+                                                   ? workingSet.MediaTypeExtensionPath 
+                                                   : workingSet.BasePath;
 
                             ramlSpec.Resources.Add(resourcePath, ramlResource);
                         }
@@ -95,6 +97,7 @@ namespace Servicestack.IntroSpec.Raml
             }
         }
 
+        // TODO - utility this
         private bool HasMediaTypeExtension(RamlResource resource) => resource.UriParameters?.ContainsKey(MediaTypeParam) ?? false;
 
         private RamlMethod GetActionMethod(ApiAction action, ApiResourceDocumentation resource, RamlResource ramlResource)
@@ -107,48 +110,39 @@ namespace Servicestack.IntroSpec.Raml
             return method;
         }
 
-        private RamlResource GetRamlResource(RamlSpec ramlSpec, string path, ApiResourceDocumentation resource,
+        private RamlResource GetRamlResource(RamlSpec ramlSpec, WorkingSet workingSet, ApiResourceDocumentation resource,
             out bool newResource)
         {
             RamlResource ramlResource;
             newResource = false;
-            if (ramlSpec.Resources.TryGetValue(path, out ramlResource))
-                log.Debug($"Found raml resource for path {path}");
-            else if (ramlSpec.Resources.TryGetValue(string.Concat(path.EnsureStartsWith("/").TrimEnd('/'), $"{{{MediaTypeParam}}}"), out ramlResource))
-                log.Debug($"Found raml resource for path {string.Concat(path.EnsureStartsWith("/").TrimEnd('/'), $"{{{MediaTypeParam}}}")}");
-            else
+
+            foreach (var path in workingSet.AvailablePaths)
             {
-                newResource = true;
-                ramlResource = new RamlResource
+                if (ramlSpec.Resources.TryGetValue(path, out ramlResource))
                 {
-                    DisplayName = resource.Title,
-                    Description = resource.Description
-                };
-                log.Debug($"Did not find raml resource for path {path}");
+                    log.Debug($"Found raml resource for path {path}");
+                    return ramlResource;
+                }
             }
+
+            newResource = true;
+            ramlResource = new RamlResource
+            {
+                DisplayName = resource.Title,
+                Description = resource.Description
+            };
+            log.Debug($"Did not find raml resource for path {workingSet.BasePath}");
+
             return ramlResource;
         }
 
-        private Dictionary<string, RamlNamedParameter> GetUriParameters(string path, ApiResourceDocumentation resource,
-            RamlResource ramlResource, ApiAction action)
+        private Dictionary<string, RamlNamedParameter> GetUriParameters(RamlResource ramlResource, ApiAction action, WorkingSet workingSet)
         {
             // Process path parameters
-            var pathParams = path.GetPathParams();
             var uriParams = ramlResource.UriParameters ?? new Dictionary<string, RamlNamedParameter>();
 
-            foreach (var pathParam in pathParams.Distinct())
-            {
-                var propDetails = resource.Properties.FirstOrDefault(r => r.Id == pathParam);
-                if (propDetails == null)
-                {
-                    log.Info($"Path Parameter {pathParam} not found for {resource.Title}");
-                    continue;
-                }
-
-                var namedParam = GenerateUriParameter(propDetails);
-
-                uriParams.Add(pathParam, namedParam);
-            }
+            foreach (var pathParam in workingSet.PathParams.Distinct())
+                uriParams.Add(pathParam.Key, pathParam.NamedParam);
 
             ProcessMediaTypeExtensions(action, uriParams);
 
@@ -209,6 +203,7 @@ namespace Servicestack.IntroSpec.Raml
             var message = string.Concat("Use ",
                 string.Join(" or ", extensions.Select(s => $"{s.Value} to specify {s.Key}")));
 
+            // Create a dummy parameter for mediaTypeExtensions
             uriParams.Add(MediaTypeParam,
                 new RamlNamedParameter { Enum = extensions.Select(s => s.Value), Description = message });
         }
@@ -246,7 +241,76 @@ namespace Servicestack.IntroSpec.Raml
 
             return uriParameter;
         }
+
+        // TODO - pull this out to a utilities class for testing
+        public WorkingSet PreProcess(string path, ApiResourceDocumentation resource)
+        {
+            var data = new WorkingSet(path);
+
+            var pathParams = path.GetPathParams();
+
+            foreach (var property in resource.Properties)
+            {
+                var isUriParam = pathParams.Contains(property.Id, StringComparer.OrdinalIgnoreCase);
+                var typeName = FriendlyTypeNames.SafeGet(property.ClrType.Name, (string) null);
+
+                var namedParam = GenerateUriParameter(property);
+
+                var ramlParam = RamlParameter.Create(property.Id, typeName, isUriParam, namedParam);
+                data.Add(ramlParam);
+            }
+
+            return data;
+        }
     }
 
+    public class WorkingSet
+    {
+        public string BasePath { get; }
+        public string MediaTypeExtensionPath { get; }
+        public IEnumerable<string> AvailablePaths => new string[] { BasePath, MediaTypeExtensionPath };
 
+        private readonly List<RamlParameter> ramlParameters = new List<RamlParameter>();
+        private const string MediaTypeParam = "mediaTypeExtension";
+
+        public WorkingSet(string path)
+        {
+            BasePath = path.EnsureStartsWith("/");
+            MediaTypeExtensionPath = string.Concat(path.TrimEnd('/'), $"{{{MediaTypeParam}}}");
+        }
+
+        public void Add(RamlParameter ramlParameter)
+        {
+            ramlParameters.Add(ramlParameter);
+        }
+
+        public IEnumerable<RamlParameter> PathParams
+            => ramlParameters?.Where(p => p.IsPathParam) ?? Enumerable.Empty<RamlParameter>();
+
+        public IEnumerable<RamlParameter> NonPathParams
+            => ramlParameters?.Where(p => !p.IsPathParam) ?? Enumerable.Empty<RamlParameter>();
+
+        public IEnumerable<RamlParameter> Params => ramlParameters ?? Enumerable.Empty<RamlParameter>();
+    }
+
+    public class RamlParameter
+    {
+        public string Key { get; private set; }
+        public string Type { get; private set; }
+        public bool IsPathParam { get; private set; }
+        public string Value { get; set; } // TODO - vary this value depending on the type? Make it RamlParameter<T>?
+        public RamlNamedParameter NamedParam { get; set; }
+
+        public static RamlParameter Create(string key, string type, bool isPathParam, RamlNamedParameter namedParam)
+        {
+            return new RamlParameter
+            {
+                Key = key,
+                Type = type,
+                IsPathParam = isPathParam,
+                Value = $"val-{type}",
+                NamedParam = namedParam
+            };
+        }
+    }
 }

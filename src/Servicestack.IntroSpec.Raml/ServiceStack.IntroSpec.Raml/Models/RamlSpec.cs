@@ -110,13 +110,11 @@ namespace ServiceStack.IntroSpec.Raml.Models
     public class RamlTrait : RamlMethod
     {
         public string Usage { get; set; }
-        public string Description { get; set; }
     }
 
     // https://github.com/donaldgray/raml-spec/blob/master/versions/raml-08/raml-08.md#resource-types-and-traits
     public class RamlResourceType : RamlResource
     {
         public string Usage { get; set; }
-        public string Description { get; set; }
     }
 }
