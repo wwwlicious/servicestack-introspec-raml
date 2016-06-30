@@ -6,16 +6,17 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
 {
     using System.Collections.Generic;
     using System.Runtime.Serialization;
+    using Services;
     using Text;
 
     [DataContract]
     public class JsonSchema : IJsonSchemaBase
     {
         /*[DataMember(Name = "id")]
-        public string Id { get; set; } // Is this of use???
+        public string Id { get; set; } // Is this of use???*/
 
         [DataMember(Name = "title")]
-        public string Title { get; set; } // Is this of use???*/
+        public string Title { get; set; }
 
         [DataMember(Name = "$schema")]
         public string Schema { get; set; }
@@ -29,12 +30,12 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
         [DataMember(Name = "required")]
         public IEnumerable<string> Required { get; set; }
 
-        [DataMember(Name = "properties")]
-        public Dictionary<string, JsonSchemaProperty> Properties { get; set; }
-
         [DataMember(Name = "definitions")]
         // Key = resource name
         public Dictionary<string, JsonSchemaDefinition> Definitions { get; set; }
+
+        [DataMember(Name = "properties")]
+        public Dictionary<string, JsonSchemaProperty> Properties { get; set; }
 
         //patternProperties
         //additionalProperties <- always false??
@@ -84,11 +85,20 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
     {
         public static void DoStuff()
         {
+            var documentationProvider = new ApiDocumentationProvider();
+            var documentation = documentationProvider.GetApiDocumentation();
+
             using (var config = JsConfig.BeginScope())
             {
                 config.EmitCamelCaseNames = true;
 
-                var schema = new JsonSchema();
+                foreach (var apiResourceDocumentation in documentation.Resources)
+                {
+                    var schema = JsonSchemaGenerator.Generate(apiResourceDocumentation);
+                    var x = schema.ToJson();
+                }
+
+                /*var schema = new JsonSchema();
                 schema.Type = "object";
                 schema.Required = new[] { "Hi" };
                 schema.Properties = new Dictionary<string, JsonSchemaProperty>();
@@ -108,9 +118,9 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
                     }
                 };
                 defs.Add(anotherClass);
-                //schema.Definitions = defs;
+                schema.Definitions = defs;*/
 
-                var x = schema.ToJson();
+                
             }
         }
     }

@@ -9,6 +9,8 @@ namespace Servicestack.IntroSpec.Raml.Services
     using ServiceStack.IntroSpec.Raml.Extensions;
     using ServiceStack.IntroSpec.Services;
     using ServiceStack.IntroSpec.Extensions;
+    using ServiceStack.IntroSpec.Raml.JsonSchema;
+    using ServiceStack.Text;
 
 #if !DEBUG
     [CacheResponse(MaxAge = 300, Duration = 600)]
@@ -31,6 +33,17 @@ namespace Servicestack.IntroSpec.Raml.Services
             // Get the filtered documentation object
             // TODO - Make this an in-proc service call so that it can be overriden
             var documentation = documentationProvider.GetApiDocumentation().Filter(request);
+
+            using (var config = JsConfig.BeginScope())
+            {
+                config.EmitCamelCaseNames = true;
+
+                foreach (var apiResourceDocumentation in documentation.Resources)
+                {
+                    var schema = JsonSchemaGenerator.Generate(apiResourceDocumentation);
+                    var x = schema.ToJson();
+                }
+            }
 
             // Convert
             var generator = new RamlCollectionGenerator();

@@ -48,5 +48,8 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
 
             return new[] { jsonTypeName };
         }
+
+        public static string GetJsonType(string typeName)
+            => friendlyTypeNames.SafeGet(typeName, Fallback);
     }
 }

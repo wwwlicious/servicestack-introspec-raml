@@ -4,8 +4,6 @@
 
 namespace ServiceStack.IntroSpec.Raml.JsonSchema
 {
-    using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using IntroSpec.Extensions;
@@ -21,19 +19,20 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
             var schema = new JsonSchema
             {
                 Description = $"Schema for {resource.Title}. {resource.Description}",
-                Type = resource.Title
+                Title = resource.Title,
+                Type = JsonSchemaTypeLookup.GetJsonType(resource.TypeName)
             };
 
             if (resource.Properties.IsNullOrEmpty())
                 return schema;
 
+            schema.Definitions = GetDefinitions(resource);
             PopulateBaseFields(schema, resource.Properties);
 
             return schema;
         }
 
-        // This needs to return a dictionary
-        public static IDictionary<string, JsonSchemaDefinition> GetDefinitions(IApiResourceType resource)
+        public static Dictionary<string, JsonSchemaDefinition> GetDefinitions(IApiResourceType resource)
         {
             // Get all embedded refs and convert to definitions
             var embeddedResources = resource.Properties.SelectMany(GetPropertiesWithEmbeddedResources).ToList();
@@ -56,6 +55,7 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
             definition.Type = JsonSchemaTypeLookup.GetJsonTypes(property.ClrType, property.IsRequired ?? false);
 
             // Required is every prop that IsRequired = true
+            PopulateBaseFields(definition, property.EmbeddedResource.Properties);
 
             return definition;
         }
@@ -99,13 +99,13 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
                 if (property.IsRequired ?? false)
                     requiredList.Add(property.Title);
 
-                // TODO Will need to know if this is referencing an exernal type first too... Process definitions first???
+                // TODO Will need to know if this is referencing an external type first
 
                 dict.Add(property.Title, jsonProp);
             }
 
-            obj.Properties = dict;
-            obj.Required = requiredList;
+            obj.Properties = dict.IsNullOrEmpty() ? null : dict;
+            obj.Required = requiredList.IsNullOrEmpty() ? null : requiredList;
         }
     }
 }
