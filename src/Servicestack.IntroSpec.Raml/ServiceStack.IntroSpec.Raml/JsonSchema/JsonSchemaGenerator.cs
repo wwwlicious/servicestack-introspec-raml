@@ -11,8 +11,6 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
 
     public static class JsonSchemaGenerator
     {
-        // TODO - correct? Make this changeable?
-
         public static JsonSchema Generate(IApiResourceType resource)
         {
             // Create with default schema

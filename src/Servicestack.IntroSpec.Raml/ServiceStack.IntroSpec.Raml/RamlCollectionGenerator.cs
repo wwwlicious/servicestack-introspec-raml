@@ -11,9 +11,11 @@ namespace Servicestack.IntroSpec.Raml
     using ServiceStack;
     using ServiceStack.IntroSpec.Extensions;
     using ServiceStack.IntroSpec.Models;
+    using ServiceStack.IntroSpec.Raml.JsonSchema;
     using ServiceStack.IntroSpec.Raml.Models;
     using ServiceStack.IntroSpec.Raml.v08;
     using ServiceStack.Logging;
+    using ServiceStack.Text;
 
     public class RamlCollectionGenerator
     {
@@ -27,7 +29,12 @@ namespace Servicestack.IntroSpec.Raml
 
             var ramlSpec = new RamlSpec();
             SetBasicInformation(documentation, ramlSpec);
-            SetResources(documentation, ramlSpec);
+
+            using (var jsConfig = JsConfig.BeginScope())
+            {
+                jsConfig.EmitCamelCaseNames = true;
+                SetResources(documentation, ramlSpec);
+            }
 
             stopwatch.Stop();
             log.Debug($"Generated Raml Spec for resource {documentation.Title}. Took {stopwatch.ElapsedMilliseconds}ms");
@@ -86,6 +93,11 @@ namespace Servicestack.IntroSpec.Raml
         private RamlMethod GetActionMethod(ApiAction action, ApiResourceDocumentation resource, RamlWorkingSet ramlWorkingSet)
         {
             var method = new RamlMethod { Description = action.Notes };
+
+            method.Body = new RamlBody
+            {
+                JsonSchema = new RamlSchema { Schema = JsonSchemaGenerator.Generate(resource).ToJson() }
+            };
 
             var hasRequestBody = action.Verb.HasRequestBody();
             if (!hasRequestBody)

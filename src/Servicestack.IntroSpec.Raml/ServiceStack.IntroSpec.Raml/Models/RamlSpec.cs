@@ -20,7 +20,8 @@ namespace ServiceStack.IntroSpec.Raml.Models
         public string BaseUri { get; set; }
         public string MediaType { get; set; }
         public IEnumerable<string> Protocols { get; set; }
-        public IEnumerable<string> Schemas { get; set; }
+
+        // TODO - define reused schemas here?? Will there be any reused?
        
         // Uri Parameters
 
@@ -86,6 +87,21 @@ namespace ServiceStack.IntroSpec.Raml.Models
         // TODO Headers
         // Key == full header name (x-my-header)
         public NamedParameterMap Headers { get; set; }
+
+        public RamlBody Body { get; set; }
+    }
+
+    public class RamlBody
+    {
+        [YamlMember(Alias = "application/json")]
+        public RamlSchema JsonSchema { get; set; }
+
+        // TODO - XML/any other schema?
+    }
+
+    public class RamlSchema
+    {
+        public string Schema { get; set; }
     }
 
     // TODO Named parameters with multiple types - is that possible in SS?

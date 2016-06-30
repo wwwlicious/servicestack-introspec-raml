@@ -34,17 +34,6 @@ namespace Servicestack.IntroSpec.Raml.Services
             // TODO - Make this an in-proc service call so that it can be overriden
             var documentation = documentationProvider.GetApiDocumentation().Filter(request);
 
-            using (var config = JsConfig.BeginScope())
-            {
-                config.EmitCamelCaseNames = true;
-
-                foreach (var apiResourceDocumentation in documentation.Resources)
-                {
-                    var schema = JsonSchemaGenerator.Generate(apiResourceDocumentation);
-                    var x = schema.ToJson();
-                }
-            }
-
             // Convert
             var generator = new RamlCollectionGenerator();
             var raml = generator.Generate(documentation);
