@@ -8,9 +8,12 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
     using System.Collections.Generic;
     using System.Linq;
     using IntroSpec.Extensions;
+    using Logging;
 
     public class JsonSchemaTypeLookup
     {
+        private static readonly ILog log = LogManager.GetLogger(typeof(JsonSchemaTypeLookup));
+
         private static readonly Dictionary<string, string> friendlyTypeNames = new Dictionary<string, string>
         {
             { "String", "string" },
@@ -27,6 +30,7 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
         };
 
         private const string Fallback = "object";
+        private const string NullType = "null";
 
         public static IEnumerable<string> GetJsonTypes(Type clrType, bool isRequired = false)
         {
@@ -35,12 +39,14 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
                                ? clrType.GetGenericArguments().First().Name
                                : clrType.Name;
 
-            var jsonName = friendlyTypeNames.SafeGet(typeName, Fallback);
+            var jsonTypeName = friendlyTypeNames.SafeGet(typeName, Fallback);
+
+            log.Debug($"Got json type name {jsonTypeName} for clrType {clrType.Name}");
 
             if (!isRequired && (clrType.IsClass || isNullableType))
-                return new[] { jsonName, "null" };
+                return new[] { jsonTypeName, NullType };
 
-            return new[] { jsonName };
+            return new[] { jsonTypeName };
         }
     }
 }
