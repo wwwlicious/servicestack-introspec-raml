@@ -40,12 +40,28 @@ namespace ServiceStack.IntroSpec.Raml.Tests.JsonSchema
             result.Should().Contain("null").And.Contain(expected);
         }
 
+        [Theory]
+        [InlineData(typeof(int?), "integer")]
+        [InlineData(typeof(DateTime?), "object")]
+        public void GetJsonTypes_ReturnsTypeNameOnly_IfNullableType_AndRequired(Type type, string expected)
+        {
+            var result = JsonSchemaTypeLookup.GetJsonTypes(type, true).ToList();
+            result.Should().OnlyContain(r => r == expected);
+        }
+
         [Fact]
         public void GetJsonTypes_ReturnsNullAndTypeName_ReferenceType()
         {
             var result = JsonSchemaTypeLookup.GetJsonTypes(typeof(JsonSchemaTypeLookup)).ToList();
             result.Count.Should().Be(2);
             result.Should().Contain("null").And.Contain("object");
+        }
+
+        [Fact]
+        public void GetJsonTypes_ReturnsTypeNameOnly_IfReferenceType_AndRequired()
+        {
+            var result = JsonSchemaTypeLookup.GetJsonTypes(typeof(JsonSchemaTypeLookup), true).ToList();
+            result.Should().OnlyContain(r => r == "object");
         }
     }
 }
