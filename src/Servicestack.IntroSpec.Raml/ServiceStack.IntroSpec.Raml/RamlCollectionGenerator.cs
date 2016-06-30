@@ -142,7 +142,7 @@ namespace Servicestack.IntroSpec.Raml
         /// MediaTypeExtension is a reserved path name which specifies that adding known extension is equivalent of sending accept header
         /// e.g. appending .json == accept:application/json
         /// </summary>
-        /// <remarks>see https://github.com/donaldgray/raml-spec/blob/master/versions/raml-08/raml-08.md#template-uris-and-uri-parameters </remarks>
+        /// <remarks>see https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#template-uris-and-uri-parameters </remarks>
         private void ProcessMediaTypeExtensions(ApiAction action, Dictionary<string, RamlNamedParameter> uriParams)
         {
             const string space = " ";
