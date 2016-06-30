@@ -100,6 +100,7 @@
     <Compile Include="Extensions\StringExtensionsTests.cs" />
     <Compile Include="Fixtures\AppHostCollection.cs" />
     <Compile Include="Fixtures\AppHostFixture.cs" />
+    <Compile Include="JsonSchema\JsonSchemaGeneratorTests.cs" />
     <Compile Include="JsonSchema\JsonSchemaTypeLookupTests.cs" />
     <Compile Include="Models\RamlSpecTests.cs" />
     <Compile Include="Models\RamlWorkingParameterTests.cs" />

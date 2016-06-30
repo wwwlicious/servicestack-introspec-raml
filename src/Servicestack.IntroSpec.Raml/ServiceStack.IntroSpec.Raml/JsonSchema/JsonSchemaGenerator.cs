@@ -4,46 +4,108 @@
 
 namespace ServiceStack.IntroSpec.Raml.JsonSchema
 {
+    using System;
+    using System.Collections;
     using System.Collections.Generic;
+    using System.Linq;
     using IntroSpec.Extensions;
     using IntroSpec.Models;
 
-    public class JsonSchemaGenerator
+    public static class JsonSchemaGenerator
     {
         // TODO - correct? Make this changeable?
 
-        public static JsonSchemaTypeDefinition Generate(IApiResourceType resource)
+        public static JsonSchema Generate(IApiResourceType resource)
         {
-            /* If there are any embedded resources these will be in the definitions
-            will need to keep track of those as they will then need to be referenced */
-
             // Create with default schema
-            var schema = new JsonSchemaTypeDefinition();
-
-            // Add the basic details to this 
-            // TODO Should this just be the title
-            schema.Description = $"Schema for {resource.Title}. {resource.Description}";
-
-            schema.Type = resource.Title;
+            var schema = new JsonSchema
+            {
+                Description = $"Schema for {resource.Title}. {resource.Description}",
+                Type = resource.Title
+            };
 
             if (resource.Properties.IsNullOrEmpty())
                 return schema;
-            schema.Properties = new Dictionary<string, JsonSchemaProperty>();
-            foreach (var property in resource.Properties)
-            {
-                var jsonProp = new JsonSchemaProperty();
-            }
+
+            PopulateBaseFields(schema, resource.Properties);
 
             return schema;
         }
 
-        // valid values
-            /*array A JSON array.
-            boolean A JSON boolean.
-            integer A JSON number without a fraction or exponent part.
-            number Any JSON number. Number includes integer.
-            null The JSON null value.
-            object A JSON object.
-            string A JSON string.*/
+        // This needs to return a dictionary
+        public static IDictionary<string, JsonSchemaDefinition> GetDefinitions(IApiResourceType resource)
+        {
+            // Get all embedded refs and convert to definitions
+            var embeddedResources = resource.Properties.SelectMany(GetPropertiesWithEmbeddedResources).ToList();
+            
+            var dictionary = new Dictionary<string, JsonSchemaDefinition>();
+            if (embeddedResources.IsNullOrEmpty())
+                return dictionary;
+
+            foreach (var prop in embeddedResources)
+            {
+                dictionary.Add(prop.Title, prop.ConvertToDefinition());
+            }
+
+            return dictionary;
+        }
+
+        public static JsonSchemaDefinition ConvertToDefinition(this ApiPropertyDocumention property)
+        {
+            var definition = new JsonSchemaDefinition();
+            definition.Type = JsonSchemaTypeLookup.GetJsonTypes(property.ClrType, property.IsRequired ?? false);
+
+            // Required is every prop that IsRequired = true
+
+            return definition;
+        }
+
+        public static IEnumerable<ApiPropertyDocumention> GetPropertiesWithEmbeddedResources(ApiPropertyDocumention prop)
+        {
+            if (prop.EmbeddedResource != null)
+            {
+                yield return prop;
+
+                if (!prop.EmbeddedResource.Properties.IsNullOrEmpty())
+                    foreach (var p in prop.EmbeddedResource.Properties.SelectMany(GetPropertiesWithEmbeddedResources))
+                        yield return p;
+            }
+        }
+
+        public static IEnumerable<IApiResourceType> GetEmbeddedResources(ApiPropertyDocumention prop)
+        {
+            if (prop.EmbeddedResource != null)
+            {
+                yield return prop.EmbeddedResource;
+
+                if (!prop.EmbeddedResource.Properties.IsNullOrEmpty())
+                    foreach (var p in prop.EmbeddedResource.Properties.SelectMany(GetEmbeddedResources))
+                        yield return p;
+            }
+        }
+
+        public static void PopulateBaseFields(IJsonSchemaBase obj, IEnumerable<ApiPropertyDocumention> properties)
+        {
+            var dict = new Dictionary<string, JsonSchemaProperty>();
+            var apiPropertyDocumentions = properties as ApiPropertyDocumention[] ?? properties.ToArray();
+
+            var requiredList = new List<string>(apiPropertyDocumentions.Length);
+
+            foreach (var property in apiPropertyDocumentions)
+            {
+                var jsonProp = new JsonSchemaProperty();
+                jsonProp.Type = JsonSchemaTypeLookup.GetJsonTypes(property.ClrType, property.IsRequired ?? false);
+
+                if (property.IsRequired ?? false)
+                    requiredList.Add(property.Title);
+
+                // TODO Will need to know if this is referencing an exernal type first too... Process definitions first???
+
+                dict.Add(property.Title, jsonProp);
+            }
+
+            obj.Properties = dict;
+            obj.Required = requiredList;
+        }
     }
 }

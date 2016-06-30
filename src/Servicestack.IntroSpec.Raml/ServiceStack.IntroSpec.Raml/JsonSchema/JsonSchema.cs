@@ -9,7 +9,7 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
     using Text;
 
     [DataContract]
-    public class JsonSchemaTypeDefinition
+    public class JsonSchema : IJsonSchemaBase
     {
         /*[DataMember(Name = "id")]
         public string Id { get; set; } // Is this of use???
@@ -33,26 +33,62 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
         public Dictionary<string, JsonSchemaProperty> Properties { get; set; }
 
         [DataMember(Name = "definitions")]
-        public IEnumerable<JsonSchemaDefinition> Definitions { get; set; }
+        // Key = resource name
+        public Dictionary<string, JsonSchemaDefinition> Definitions { get; set; }
 
         //patternProperties
         //additionalProperties <- always false??
 
         private const string DefaultSchema = "http://json-schema.org/draft-04/schema#";
-        public JsonSchemaTypeDefinition() : this(DefaultSchema) { }
+        public JsonSchema() : this(DefaultSchema) { }
 
-        public JsonSchemaTypeDefinition(string schema)
+        public JsonSchema(string schema)
         {
             Schema = schema;
         }
+    }
 
+    public class JsonSchemaDefinition : IJsonSchemaBase
+    {
+        public IEnumerable<string> Type { get; set; }
+        public IEnumerable<string> Required { get; set; }
+
+        public Dictionary<string, JsonSchemaProperty> Properties { get; set; }
+
+        // OneOf
+        // Pattern
+    }
+
+    public interface IJsonSchemaBase
+    {
+        IEnumerable<string> Required { get; set; }
+
+        Dictionary<string, JsonSchemaProperty> Properties { get; set; }
+    }
+
+    public class JsonSchemaProperty
+    {
+        public IEnumerable<string> Type { get; set; }
+
+        public JsonSchemaRef Items { get; set; } // this has $ref inside
+    }
+
+    [DataContract]
+    public class JsonSchemaRef
+    {
+        [DataMember(Name = "$ref")]
+        public string Ref { get; private set; }
+    }
+
+    public static class TestRunner
+    {
         public static void DoStuff()
         {
             using (var config = JsConfig.BeginScope())
             {
                 config.EmitCamelCaseNames = true;
 
-                var schema = new JsonSchemaTypeDefinition();
+                var schema = new JsonSchema();
                 schema.Type = "object";
                 schema.Required = new[] { "Hi" };
                 schema.Properties = new Dictionary<string, JsonSchemaProperty>();
@@ -72,36 +108,11 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
                     }
                 };
                 defs.Add(anotherClass);
-                schema.Definitions = defs;
+                //schema.Definitions = defs;
 
                 var x = schema.ToJson();
             }
         }
-    }
-
-    public class JsonSchemaDefinition
-    {
-        public IEnumerable<string> Type { get; set; }
-        public IEnumerable<string> Required { get; set; }
-
-        public Dictionary<string, JsonSchemaProperty> Properties { get; set; }
-
-        // OneOf
-        // Pattern
-    }
-
-    public class JsonSchemaProperty
-    {
-        public IEnumerable<string> Type { get; set; }
-
-        public JsonSchemaRef Items { get; set; } // this has $ref inside
-    }
-
-    [DataContract]
-    public class JsonSchemaRef
-    {
-        [DataMember(Name = "$ref")]
-        public string Ref { get; private set; }
     }
 }
 
