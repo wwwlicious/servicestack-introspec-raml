@@ -72,6 +72,8 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
         public IEnumerable<string> Type { get; set; }
 
         public JsonSchemaRef Items { get; set; } // this has $ref inside
+
+        public void AddRef(string refName) => Items = JsonSchemaRef.Create(refName);
     }
 
     [DataContract]
@@ -79,6 +81,9 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
     {
         [DataMember(Name = "$ref")]
         public string Ref { get; private set; }
+
+        // TODO Sanitise where the refName is used and also handle remote definition references
+        public static JsonSchemaRef Create(string refName) => new JsonSchemaRef { Ref = $"#/definitions/{refName}" };
     }
 
     public static class TestRunner

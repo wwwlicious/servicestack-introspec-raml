@@ -35,15 +35,15 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
         public static Dictionary<string, JsonSchemaDefinition> GetDefinitions(IApiResourceType resource)
         {
             // Get all embedded refs and convert to definitions
-            var embeddedResources = resource.Properties.SelectMany(GetPropertiesWithEmbeddedResources).ToList();
+            var propertiesWithResources = resource.Properties.SelectMany(GetPropertiesWithEmbeddedResources).ToList();
             
             var dictionary = new Dictionary<string, JsonSchemaDefinition>();
-            if (embeddedResources.IsNullOrEmpty())
+            if (propertiesWithResources.IsNullOrEmpty())
                 return dictionary;
 
-            foreach (var prop in embeddedResources)
+            foreach (var prop in propertiesWithResources)
             {
-                dictionary.Add(prop.Title, prop.ConvertToDefinition());
+                dictionary.Add(prop.EmbeddedResource.Title, prop.ConvertToDefinition());
             }
 
             return dictionary;
@@ -72,6 +72,7 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
             }
         }
 
+        // TODO - kill this
         public static IEnumerable<IApiResourceType> GetEmbeddedResources(ApiPropertyDocumention prop)
         {
             if (prop.EmbeddedResource != null)
@@ -93,13 +94,19 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
 
             foreach (var property in apiPropertyDocumentions)
             {
-                var jsonProp = new JsonSchemaProperty();
-                jsonProp.Type = JsonSchemaTypeLookup.GetJsonTypes(property.ClrType, property.IsRequired ?? false);
+                var jsonProp = new JsonSchemaProperty
+                {
+                    Type = JsonSchemaTypeLookup.GetJsonTypes(property.ClrType, property.IsRequired ?? false)
+                };
 
                 if (property.IsRequired ?? false)
                     requiredList.Add(property.Title);
 
                 // TODO Will need to know if this is referencing an external type first
+                if (property.EmbeddedResource != null)
+                {
+                    jsonProp.AddRef(property.EmbeddedResource.Title);
+                }
 
                 dict.Add(property.Title, jsonProp);
             }
