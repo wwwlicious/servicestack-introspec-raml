@@ -115,7 +115,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Servicestack.IntroSpec.Raml\ServiceStack.IntroSpec.Raml.csproj">
+    <ProjectReference Include="..\..\src\Servicestack.IntroSpec.Raml\Servicestack.IntroSpec.Raml\ServiceStack.IntroSpec.Raml.csproj">
       <Project>{f52609a4-1a2a-4415-9eb7-5832edf7d6bb}</Project>
       <Name>ServiceStack.IntroSpec.Raml</Name>
     </ProjectReference>
