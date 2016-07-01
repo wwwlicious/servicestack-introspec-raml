@@ -15,10 +15,19 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
 
     public class GenerationUtilitiesTests
     {
+        private readonly GenerationUtilities generator;
+        private readonly GenerationUtilities generatorWithExtensions;
+
+        public GenerationUtilitiesTests()
+        {
+            generator = new GenerationUtilities(null);
+            generatorWithExtensions = new GenerationUtilities(new HashSet<string> { ".json", ".xml", ".jsv" });
+        }
+
         [Fact]
         public void GenerateUriParameters_Throws_IfPropertyNull()
         {
-            Action action = () => GenerationUtilities.GenerateUriParameter(null);
+            Action action = () => generator.GenerateUriParameter(null);
             action.ShouldThrow<ArgumentException>().WithMessage("Value cannot be null.\r\nParameter name: property");
         }
 
@@ -29,7 +38,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
             const string description = "bar";
             var prop = new ApiPropertyDocumention { Description = description, Title = displayName, ClrType = typeof(string) };
 
-            var result = GenerationUtilities.GenerateUriParameter(prop);
+            var result = generator.GenerateUriParameter(prop);
             result.Description.Should().Be(description);
             result.DisplayName.Should().Be(displayName);
         }
@@ -46,7 +55,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
         public void GenerateUriParameters_SetsType(Type type, string expected)
         {
             var prop = new ApiPropertyDocumention { ClrType = type };
-            var result = GenerationUtilities.GenerateUriParameter(prop);
+            var result = generator.GenerateUriParameter(prop);
             result.Type.Should().Be(expected);
         }
 
@@ -57,7 +66,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
         public void GenerateUriParameters_SetsAllowMultiple(bool? allowMultiple, bool repeat)
         {
             var prop = new ApiPropertyDocumention { ClrType = typeof(int), AllowMultiple = allowMultiple };
-            var result = GenerationUtilities.GenerateUriParameter(prop);
+            var result = generator.GenerateUriParameter(prop);
             result.Repeat.Should().Be(repeat);
         }
 
@@ -68,7 +77,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
         public void GenerateUriParameters_SetsRequired(bool? isRequired, bool required)
         {
             var prop = new ApiPropertyDocumention { ClrType = typeof(int), IsRequired = isRequired };
-            var result = GenerationUtilities.GenerateUriParameter(prop);
+            var result = generator.GenerateUriParameter(prop);
             result.Required.Should().Be(required);
         }
 
@@ -77,7 +86,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
         {
             var prop = new ApiPropertyDocumention { ClrType = typeof(int), Contraints = null };
 
-            Action action = () => GenerationUtilities.GenerateUriParameter(prop);
+            Action action = () => generator.GenerateUriParameter(prop);
             action.ShouldNotThrow<ArgumentNullException>();
         }
 
@@ -96,7 +105,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
             };
 
             var prop = new ApiPropertyDocumention { ClrType = typeof(int), Contraints = constraint };
-            var result = GenerationUtilities.GenerateUriParameter(prop);
+            var result = generator.GenerateUriParameter(prop);
 
             result.Enum.Should().BeEquivalentTo(validValues);
             result.Minimum.Should().BeNull();
@@ -118,7 +127,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
             };
 
             var prop = new ApiPropertyDocumention { ClrType = typeof(int), Contraints = constraint };
-            var result = GenerationUtilities.GenerateUriParameter(prop);
+            var result = generator.GenerateUriParameter(prop);
 
             result.Enum.Should().BeNullOrEmpty();
             result.Minimum.Should().Be(min);
@@ -130,21 +139,21 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
         [InlineData("")]
         public void GenerateWorkingSet_Throws_IfPathNullOrEmpty(string path)
         {
-            Action action = () => GenerationUtilities.GenerateWorkingSet(path, new ApiResourceDocumentation());
+            Action action = () => generator.GenerateWorkingSet(path, new ApiResourceDocumentation());
             action.ShouldThrow<ArgumentException>().WithMessage("Value cannot be null.\r\nParameter name: path");
         }
 
         [Fact]
         public void GenerateWorkingSet_Throws_IfResourceNull()
         {
-            Action action = () => GenerationUtilities.GenerateWorkingSet("/api", null);
+            Action action = () => generator.GenerateWorkingSet("/api", null);
             action.ShouldThrow<ArgumentException>().WithMessage("Value cannot be null.\r\nParameter name: resource");
         }
 
         [Fact]
         public void GenerateWorkingSet_HandlesNoProperties()
         {
-            var ws = GenerationUtilities.GenerateWorkingSet("/api", new ApiResourceDocumentation());
+            var ws = generator.GenerateWorkingSet("/api", new ApiResourceDocumentation());
             ws.PathParams.Should().BeEmpty();
             ws.NonPathParams.Should().BeEmpty();
         }
@@ -155,7 +164,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
         [InlineData("/api/{pathParam1}/{pathParam2}")]
         public void GenerateWorkingSet_AddsParameterPerProperty(string path)
         {
-            var ws = GenerationUtilities.GenerateWorkingSet(path,
+            var ws = generator.GenerateWorkingSet(path,
                 new ApiResourceDocumentation
                 {
                     Properties =
@@ -172,21 +181,21 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
         public void HasMediaTypeExtension_False_IfResourceNull()
         {
             RamlResource resource = null;
-            resource.HasMediaTypeExtension().Should().BeFalse();
+            generator.HasMediaTypeExtension(resource).Should().BeFalse();
         }
 
         [Fact]
         public void HasMediaTypeExtension_False_IfUriParametersNull()
         {
             var resource = new RamlResource { UriParameters = null };
-            resource.HasMediaTypeExtension().Should().BeFalse();
+            generator.HasMediaTypeExtension(resource).Should().BeFalse();
         }
 
         [Fact]
         public void HasMediaTypeExtension_False_IfUriParametersEmpty()
         {
             var resource = new RamlResource { UriParameters = new Dictionary<string, RamlNamedParameter>() };
-            resource.HasMediaTypeExtension().Should().BeFalse();
+            generator.HasMediaTypeExtension(resource).Should().BeFalse();
         }
 
 
@@ -201,7 +210,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
                     { "Bar", new RamlNamedParameter() }
                 }
             };
-            resource.HasMediaTypeExtension().Should().BeFalse();
+            generator.HasMediaTypeExtension(resource).Should().BeFalse();
         }
 
         [Fact]
@@ -215,13 +224,13 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
                     { "mediaTypeExtension", new RamlNamedParameter() }
                 }
             };
-            resource.HasMediaTypeExtension().Should().BeTrue();
+            generator.HasMediaTypeExtension(resource).Should().BeTrue();
         }
 
         [Fact]
         public void ProcessQueryStrings_ReturnsNull_IfNullProperties()
         {
-            GenerationUtilities.GetQueryStringLookup(new ApiResourceDocumentation(), new RamlWorkingSet("/api"))
+            generator.GetQueryStringLookup(new ApiResourceDocumentation(), new RamlWorkingSet("/api"))
                 .Should().BeNull();
         }
 
@@ -229,8 +238,62 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
         public void ProcessQueryStrings_ReturnsNull_IfEmptyProperties()
         {
             var apiResourceDocumentation = new ApiResourceDocumentation { Properties = new ApiPropertyDocumention[0] };
-            GenerationUtilities.GetQueryStringLookup(apiResourceDocumentation, new RamlWorkingSet("/api"))
+            generator.GetQueryStringLookup(apiResourceDocumentation, new RamlWorkingSet("/api"))
                 .Should().BeNull();
+        }
+
+        [Fact]
+        public void ProcessMediaTypeExtensions_DoesNotUpdateUriParams_IfMediaTypeExtensionExists()
+        {
+            var uriParams = new Dictionary<string, RamlNamedParameter>
+            {
+                { "mediaTypeExtension", null }
+            };
+
+            generator.ProcessMediaTypeExtensions(null, uriParams);
+            uriParams.Count.Should().Be(1);
+        }
+
+        [Fact]
+        public void ProcessMediaTypeExtensions_IfNoKnownFileTypes()
+        {
+            var action = new ApiAction { ContentTypes = new[] { "application/hal+json", "text/yaml" } };
+            var uriParams = new Dictionary<string, RamlNamedParameter>();
+
+            generatorWithExtensions.ProcessMediaTypeExtensions(action, uriParams);
+            uriParams.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void ProcessMediaTypeExtensions_AddsMediaTypeExtensionParameter()
+        {
+            var action = new ApiAction { ContentTypes = new[] { "application/json", "text/xml" } };
+            var uriParams = new Dictionary<string, RamlNamedParameter>();
+
+            generatorWithExtensions.ProcessMediaTypeExtensions(action, uriParams);
+            uriParams.Should().ContainKey("mediaTypeExtension");
+        }
+
+        [Fact]
+        public void ProcessMediaTypeExtensions_AddsKnownExtensionTypes()
+        {
+            var action = new ApiAction { ContentTypes = new[] { "application/json", "text/xml" } };
+            var uriParams = new Dictionary<string, RamlNamedParameter>();
+
+            generatorWithExtensions.ProcessMediaTypeExtensions(action, uriParams);
+            var param = uriParams["mediaTypeExtension"];
+            param.Enum.Should().Contain(".xml").And.Contain(".json");
+        }
+
+        [Fact]
+        public void ProcessMediaTypeExtensions_SetsCorrectDescritiption()
+        {
+            var action = new ApiAction { ContentTypes = new[] { "application/json", "text/xml" } };
+            var uriParams = new Dictionary<string, RamlNamedParameter>();
+
+            generatorWithExtensions.ProcessMediaTypeExtensions(action, uriParams);
+            var param = uriParams["mediaTypeExtension"];
+            param.Description.Should().Be("Use .json to specify application/json or .xml to specify text/xml");
         }
     }
 }

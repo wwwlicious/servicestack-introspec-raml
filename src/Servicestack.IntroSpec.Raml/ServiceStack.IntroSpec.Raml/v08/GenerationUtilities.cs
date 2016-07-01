@@ -13,11 +13,11 @@ namespace ServiceStack.IntroSpec.Raml.v08
     using Models;
     using Servicestack.IntroSpec.Raml;
 
-    public static class GenerationUtilities
+    public class GenerationUtilities : IGenerationUtilities
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(GenerationUtilities));
+        private readonly ILog log = LogManager.GetLogger(typeof(GenerationUtilities));
 
-        public static Dictionary<string, string> FriendlyTypeNames = new Dictionary<string, string>
+        public Dictionary<string, string> FriendlyTypeNames = new Dictionary<string, string>
         {
             { "String", "string" },
             { "Int64", "number" },
@@ -30,7 +30,14 @@ namespace ServiceStack.IntroSpec.Raml.v08
             { "Boolean", "boolean" }
         };
 
-        public static RamlNamedParameter GenerateUriParameter(ApiPropertyDocumention property)
+        private readonly HashSet<string> allowedFormats;
+
+        public GenerationUtilities(HashSet<string> allowedFormats)
+        {
+            this.allowedFormats = allowedFormats ?? new HashSet<string>();
+        }
+
+        public RamlNamedParameter GenerateUriParameter(ApiPropertyDocumention property)
         {
             property.ThrowIfNull(nameof(property));
 
@@ -66,7 +73,7 @@ namespace ServiceStack.IntroSpec.Raml.v08
             return uriParameter;
         }
 
-        public static RamlWorkingSet GenerateWorkingSet(string path, ApiResourceDocumentation resource)
+        public RamlWorkingSet GenerateWorkingSet(string path, ApiResourceDocumentation resource)
         {
             path.ThrowIfNullOrEmpty(nameof(path));
             resource.ThrowIfNull(nameof(resource));
@@ -89,7 +96,7 @@ namespace ServiceStack.IntroSpec.Raml.v08
             return data;
         }
 
-        public static bool HasMediaTypeExtension(this RamlResource resource)
+        public bool HasMediaTypeExtension(RamlResource resource)
         {
             if ((resource == null) || resource.UriParameters.IsNullOrEmpty())
                 return false;
@@ -97,10 +104,51 @@ namespace ServiceStack.IntroSpec.Raml.v08
             return resource.UriParameters.ContainsKey(Constants.MediaTypeExtensionKey);
         }
 
-        public static Dictionary<string, RamlNamedParameter> GetQueryStringLookup(ApiResourceDocumentation resource, RamlWorkingSet ramlWorkingSet)
+        public Dictionary<string, RamlNamedParameter> GetQueryStringLookup(ApiResourceDocumentation resource, RamlWorkingSet ramlWorkingSet)
         {
             if (resource.Properties.IsNullOrEmpty()) return null;
             return ramlWorkingSet.NonPathParams.ToDictionary(param => param.Key, param => param.NamedParam);
+        }
+
+        /// <summary>
+        /// MediaTypeExtension is a reserved path name which specifies that adding known extension is equivalent of sending accept header
+        /// e.g. appending .json == accept:application/json
+        /// </summary>
+        /// <remarks>see https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#template-uris-and-uri-parameters </remarks>
+        public void ProcessMediaTypeExtensions(ApiAction action, Dictionary<string, RamlNamedParameter> uriParams)
+        {
+            if (uriParams.ContainsKey(Constants.MediaTypeExtensionKey)) return;
+
+            var extensions = new Dictionary<string, string>();
+            foreach (var contentType in action.ContentTypes)
+            {
+                try
+                {
+                    // Get friendly name
+                    var extension = MimeTypes.GetExtension(contentType);
+
+                    // TODO - filter out soap requests - any others?
+                    // Only add mediaTypeExtensions in the path is an auto-route
+                    if (allowedFormats.Contains(extension))
+                        extensions.Add(contentType, extension);
+
+                    log.Debug($"Found extension {extension} for {contentType}");
+                }
+                catch (NotSupportedException nse)
+                {
+                    log.Warn($"Mime Type {contentType} not supported.", nse);
+                }
+            }
+
+            if (extensions.IsNullOrEmpty()) return;
+
+            // Generates message like "Use .json to specify application/json or .xml to specify text/xml"
+            var message = string.Concat("Use ",
+                string.Join(" or ", extensions.Select(s => $"{s.Value} to specify {s.Key}")));
+
+            // Create a dummy parameter for mediaTypeExtensions
+            uriParams.Add(Constants.MediaTypeExtensionKey,
+                new RamlNamedParameter { Enum = extensions.Select(s => s.Value), Description = message });
         }
     }
 }

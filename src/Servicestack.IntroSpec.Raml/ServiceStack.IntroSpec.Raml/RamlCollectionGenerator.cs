@@ -21,10 +21,16 @@ namespace Servicestack.IntroSpec.Raml
     {
         private readonly ILog log = LogManager.GetLogger(typeof(RamlCollectionGenerator));
         private readonly HashSet<string> allowedFormats;
+        private readonly IGenerationUtilities generationUtilities;
+
+        public RamlCollectionGenerator(IGenerationUtilities generationUtilities)
+        {
+            this.generationUtilities = generationUtilities;
+        }
 
         public RamlCollectionGenerator(HashSet<string> allowedFormats)
         {
-            this.allowedFormats = allowedFormats;
+            generationUtilities = new GenerationUtilities(allowedFormats);
         }
 
         public RamlSpec Generate(ApiDocumentation documentation)
@@ -69,7 +75,7 @@ namespace Servicestack.IntroSpec.Raml
                     // For each action, go through relative paths
                     foreach (var path in action.RelativePaths)
                     {
-                        var workingSet = GenerationUtilities.GenerateWorkingSet(path, resource);
+                        var workingSet = generationUtilities.GenerateWorkingSet(path, resource);
 
                         log.Debug($"Processing path {path} for action {action.Verb} for resource {resource.Title}");
 
@@ -83,14 +89,13 @@ namespace Servicestack.IntroSpec.Raml
 
                         ramlResource.Methods.Add(action.Verb.ToLower(), method);
 
-                        if (isNewResource)
-                        {
-                            var resourcePath = ramlResource.HasMediaTypeExtension()
-                                                   ? workingSet.MediaTypeExtensionPath 
-                                                   : workingSet.BasePath;
+                        if (!isNewResource) continue;
 
-                            ramlSpec.Resources.Add(resourcePath, ramlResource);
-                        }
+                        var resourcePath = generationUtilities.HasMediaTypeExtension(ramlResource)
+                                               ? workingSet.MediaTypeExtensionPath 
+                                               : workingSet.BasePath;
+
+                        ramlSpec.Resources.Add(resourcePath, ramlResource);
                     }
                 }
             }
@@ -107,7 +112,7 @@ namespace Servicestack.IntroSpec.Raml
 
             var hasRequestBody = action.Verb.HasRequestBody();
             if (!hasRequestBody)
-                method.QueryParameters = GenerationUtilities.GetQueryStringLookup(resource, ramlWorkingSet);
+                method.QueryParameters = generationUtilities.GetQueryStringLookup(resource, ramlWorkingSet);
             return method;
         }
 
@@ -149,51 +154,10 @@ namespace Servicestack.IntroSpec.Raml
             if (!path.IsAutoRoute)
             {
                 log.Debug($"Path {path.Path} is auto route. Processing media type extensions");
-                ProcessMediaTypeExtensions(action, uriParams);
+                generationUtilities.ProcessMediaTypeExtensions(action, uriParams);
             }
 
             return uriParams;
-        }
-
-        /// <summary>
-        /// MediaTypeExtension is a reserved path name which specifies that adding known extension is equivalent of sending accept header
-        /// e.g. appending .json == accept:application/json
-        /// </summary>
-        /// <remarks>see https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#template-uris-and-uri-parameters </remarks>
-        private void ProcessMediaTypeExtensions(ApiAction action, Dictionary<string, RamlNamedParameter> uriParams)
-        {
-            if (uriParams.ContainsKey(Constants.MediaTypeExtensionKey)) return;
-
-            var extensions = new Dictionary<string, string>();
-            foreach (var contentType in action.ContentTypes)
-            {
-                try
-                {
-                    // Get friendly name
-                    var extension = MimeTypes.GetExtension(contentType);
-
-                    // TODO - filter out soap requests - any others?
-                    // Only add mediaTypeExtensions in the path is an auto-route
-                    if (allowedFormats.Contains(extension))
-                        extensions.Add(contentType, extension);
-
-                    log.Debug($"Found extension {extension} for {contentType}");
-                }
-                catch (NotSupportedException nse)
-                {
-                    log.Warn($"Mime Type {contentType} not supported.", nse);
-                }
-            }
-
-            if (extensions.IsNullOrEmpty()) return;
-
-            // Generates message like "Use .json to specify application/json or .xml to specify text/xml"
-            var message = string.Concat("Use ",
-                string.Join(" or ", extensions.Select(s => $"{s.Value} to specify {s.Key}")));
-
-            // Create a dummy parameter for mediaTypeExtensions
-            uriParams.Add(Constants.MediaTypeExtensionKey,
-                new RamlNamedParameter { Enum = extensions.Select(s => s.Value), Description = message });
         }
     }
 }

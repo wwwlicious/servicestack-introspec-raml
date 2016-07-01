@@ -88,6 +88,7 @@
     <Compile Include="ResourceDictionaryConverter.cs" />
     <Compile Include="Services\Raml08Service.cs" />
     <Compile Include="RamlFormat.cs" />
+    <Compile Include="v08\IGenerationUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
