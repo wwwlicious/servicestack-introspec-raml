@@ -38,7 +38,7 @@ namespace Servicestack.IntroSpec.Raml
 
             using (var jsConfig = JsConfig.BeginScope())
             {
-                jsConfig.EmitCamelCaseNames = true;
+                jsConfig.EmitCamelCaseNames = true; // Required for serialising JSON schema
                 SetResources(documentation, ramlSpec);
             }
 
@@ -107,7 +107,7 @@ namespace Servicestack.IntroSpec.Raml
 
             var hasRequestBody = action.Verb.HasRequestBody();
             if (!hasRequestBody)
-                method.QueryParameters = ProcessQueryStrings(resource, ramlWorkingSet);
+                method.QueryParameters = GenerationUtilities.GetQueryStringLookup(resource, ramlWorkingSet);
             return method;
         }
 
@@ -153,12 +153,6 @@ namespace Servicestack.IntroSpec.Raml
             }
 
             return uriParams;
-        }
-
-        private Dictionary<string, RamlNamedParameter> ProcessQueryStrings(ApiResourceDocumentation resource, RamlWorkingSet ramlWorkingSet)
-        {
-            if (resource.Properties.IsNullOrEmpty()) return null;
-            return ramlWorkingSet.NonPathParams.ToDictionary(param => param.Key, param => param.NamedParam);
         }
 
         /// <summary>

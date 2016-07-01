@@ -96,5 +96,11 @@ namespace ServiceStack.IntroSpec.Raml.v08
 
             return resource.UriParameters.ContainsKey(Constants.MediaTypeExtensionKey);
         }
+
+        public static Dictionary<string, RamlNamedParameter> GetQueryStringLookup(ApiResourceDocumentation resource, RamlWorkingSet ramlWorkingSet)
+        {
+            if (resource.Properties.IsNullOrEmpty()) return null;
+            return ramlWorkingSet.NonPathParams.ToDictionary(param => param.Key, param => param.NamedParam);
+        }
     }
 }

@@ -217,5 +217,20 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
             };
             resource.HasMediaTypeExtension().Should().BeTrue();
         }
+
+        [Fact]
+        public void ProcessQueryStrings_ReturnsNull_IfNullProperties()
+        {
+            GenerationUtilities.GetQueryStringLookup(new ApiResourceDocumentation(), new RamlWorkingSet("/api"))
+                .Should().BeNull();
+        }
+
+        [Fact]
+        public void ProcessQueryStrings_ReturnsNull_IfEmptyProperties()
+        {
+            var apiResourceDocumentation = new ApiResourceDocumentation { Properties = new ApiPropertyDocumention[0] };
+            GenerationUtilities.GetQueryStringLookup(apiResourceDocumentation, new RamlWorkingSet("/api"))
+                .Should().BeNull();
+        }
     }
 }
