@@ -4,12 +4,10 @@
 
 namespace Servicestack.IntroSpec.Raml
 {
-    using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Linq;
     using ServiceStack;
-    using ServiceStack.IntroSpec.Extensions;
     using ServiceStack.IntroSpec.Models;
     using ServiceStack.IntroSpec.Raml.JsonSchema;
     using ServiceStack.IntroSpec.Raml.Models;
@@ -150,7 +148,6 @@ namespace Servicestack.IntroSpec.Raml
             foreach (var pathParam in ramlWorkingSet.PathParams.Distinct())
                 uriParams.Add(pathParam.Key, pathParam.NamedParam);
 
-            // TODO - only process these for GET methods?
             if (!path.IsAutoRoute)
             {
                 log.Debug($"Path {path.Path} is auto route. Processing media type extensions");

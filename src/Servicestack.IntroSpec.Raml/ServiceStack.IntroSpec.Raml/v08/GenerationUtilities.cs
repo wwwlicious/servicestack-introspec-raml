@@ -117,7 +117,8 @@ namespace ServiceStack.IntroSpec.Raml.v08
         /// <remarks>see https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#template-uris-and-uri-parameters </remarks>
         public void ProcessMediaTypeExtensions(ApiAction action, Dictionary<string, RamlNamedParameter> uriParams)
         {
-            if (uriParams.ContainsKey(Constants.MediaTypeExtensionKey)) return;
+            action.ThrowIfNull(nameof(action));
+            if (uriParams?.ContainsKey(Constants.MediaTypeExtensionKey) ?? false) return;
 
             var extensions = new Dictionary<string, string>();
             foreach (var contentType in action.ContentTypes)

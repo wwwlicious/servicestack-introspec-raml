@@ -243,6 +243,22 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
         }
 
         [Fact]
+        public void ProcessMediaTypeExtensions_ThrowsIfApiActionNull()
+        {
+            var uriParams = new Dictionary<string, RamlNamedParameter>();
+
+            Action action = () => generator.ProcessMediaTypeExtensions(null, uriParams);
+            action.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: action");
+        }
+
+        [Fact]
+        public void ProcessMediaTypeExtensions_HandlesEmptyDictionary()
+        {
+            Action action = () => generator.ProcessMediaTypeExtensions(new ApiAction(), null);
+            action.ShouldNotThrow<ArgumentException>();
+        }
+
+        [Fact]
         public void ProcessMediaTypeExtensions_DoesNotUpdateUriParams_IfMediaTypeExtensionExists()
         {
             var uriParams = new Dictionary<string, RamlNamedParameter>
@@ -250,7 +266,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
                 { "mediaTypeExtension", null }
             };
 
-            generator.ProcessMediaTypeExtensions(null, uriParams);
+            generator.ProcessMediaTypeExtensions(new ApiAction(), uriParams);
             uriParams.Count.Should().Be(1);
         }
 
