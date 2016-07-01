@@ -8,6 +8,7 @@ namespace Servicestack.IntroSpec.Raml
     using System.Diagnostics;
     using System.Linq;
     using ServiceStack;
+    using ServiceStack.IntroSpec.Extensions;
     using ServiceStack.IntroSpec.Models;
     using ServiceStack.IntroSpec.Raml.JsonSchema;
     using ServiceStack.IntroSpec.Raml.Models;
@@ -23,6 +24,7 @@ namespace Servicestack.IntroSpec.Raml
 
         public RamlCollectionGenerator(IGenerationUtilities generationUtilities)
         {
+            generationUtilities.ThrowIfNull(nameof(generationUtilities));
             this.generationUtilities = generationUtilities;
         }
 
@@ -60,6 +62,12 @@ namespace Servicestack.IntroSpec.Raml
 
         private void SetResources(ApiDocumentation documentation, RamlSpec ramlSpec)
         {
+            if (documentation.Resources.IsNullOrEmpty())
+            {
+                log.Info($"{documentation.Title} has no resources");
+                return;
+            }
+
             // Iterate through resources
             foreach (var resource in documentation.Resources)
             {

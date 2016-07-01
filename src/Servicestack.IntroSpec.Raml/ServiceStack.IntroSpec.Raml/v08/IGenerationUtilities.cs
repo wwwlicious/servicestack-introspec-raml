@@ -10,6 +10,7 @@ namespace ServiceStack.IntroSpec.Raml.v08
 
     public interface IGenerationUtilities
     {
+        RamlNamedParameter GenerateUriParameter(ApiPropertyDocumention property);
         RamlWorkingSet GenerateWorkingSet(string path, ApiResourceDocumentation resource);
         Dictionary<string, RamlNamedParameter> GetQueryStringLookup(ApiResourceDocumentation resource, RamlWorkingSet ramlWorkingSet);
         bool HasMediaTypeExtension(RamlResource resource);
