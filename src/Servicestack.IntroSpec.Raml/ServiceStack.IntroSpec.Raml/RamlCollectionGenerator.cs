@@ -20,6 +20,12 @@ namespace Servicestack.IntroSpec.Raml
     public class RamlCollectionGenerator
     {
         private readonly ILog log = LogManager.GetLogger(typeof(RamlCollectionGenerator));
+        private readonly HashSet<string> allowedFormats;
+
+        public RamlCollectionGenerator(HashSet<string> allowedFormats)
+        {
+            this.allowedFormats = allowedFormats;
+        }
 
         public RamlSpec Generate(ApiDocumentation documentation)
         {
@@ -71,7 +77,7 @@ namespace Servicestack.IntroSpec.Raml
                         bool isNewResource;
                         var ramlResource = GetRamlResource(ramlSpec, workingSet, resource, out isNewResource);
                         
-                        ramlResource.UriParameters = GetUriParameters(ramlResource, action, workingSet);
+                        ramlResource.UriParameters = GetUriParameters(ramlResource, action, workingSet, path);
 
                         var method = GetActionMethod(action, resource, workingSet);
 
@@ -131,7 +137,7 @@ namespace Servicestack.IntroSpec.Raml
             return ramlResource;
         }
 
-        private Dictionary<string, RamlNamedParameter> GetUriParameters(RamlResource ramlResource, ApiAction action, RamlWorkingSet ramlWorkingSet)
+        private Dictionary<string, RamlNamedParameter> GetUriParameters(RamlResource ramlResource, ApiAction action, RamlWorkingSet ramlWorkingSet, RelativePath path)
         {
             // Process path parameters
             var uriParams = ramlResource.UriParameters ?? new Dictionary<string, RamlNamedParameter>();
@@ -139,7 +145,12 @@ namespace Servicestack.IntroSpec.Raml
             foreach (var pathParam in ramlWorkingSet.PathParams.Distinct())
                 uriParams.Add(pathParam.Key, pathParam.NamedParam);
 
-            ProcessMediaTypeExtensions(action, uriParams);
+            // TODO - only process these for GET methods?
+            if (!path.IsAutoRoute)
+            {
+                log.Debug($"Path {path.Path} is auto route. Processing media type extensions");
+                ProcessMediaTypeExtensions(action, uriParams);
+            }
 
             return uriParams;
         }
@@ -157,7 +168,6 @@ namespace Servicestack.IntroSpec.Raml
         /// <remarks>see https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#template-uris-and-uri-parameters </remarks>
         private void ProcessMediaTypeExtensions(ApiAction action, Dictionary<string, RamlNamedParameter> uriParams)
         {
-            const string space = " ";
             if (uriParams.ContainsKey(Constants.MediaTypeExtensionKey)) return;
 
             var extensions = new Dictionary<string, string>();
@@ -167,7 +177,10 @@ namespace Servicestack.IntroSpec.Raml
                 {
                     // Get friendly name
                     var extension = MimeTypes.GetExtension(contentType);
-                    if (!extension.Contains(space))
+
+                    // TODO - filter out soap requests - any others?
+                    // Only add mediaTypeExtensions in the path is an auto-route
+                    if (allowedFormats.Contains(extension))
                         extensions.Add(contentType, extension);
 
                     log.Debug($"Found extension {extension} for {contentType}");

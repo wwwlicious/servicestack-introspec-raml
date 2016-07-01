@@ -4,13 +4,14 @@
 
 namespace Servicestack.IntroSpec.Raml.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using DTO;
     using ServiceStack;
     using ServiceStack.IntroSpec.Raml.Extensions;
     using ServiceStack.IntroSpec.Services;
     using ServiceStack.IntroSpec.Extensions;
-    using ServiceStack.IntroSpec.Raml.JsonSchema;
-    using ServiceStack.Text;
 
 #if !DEBUG
     [CacheResponse(MaxAge = 300, Duration = 600)]
@@ -35,7 +36,9 @@ namespace Servicestack.IntroSpec.Raml.Services
             var documentation = documentationProvider.GetApiDocumentation().Filter(request);
 
             // Convert
-            var generator = new RamlCollectionGenerator();
+            var allowedFormats =
+                HostContext.MetadataPagesConfig.AvailableFormatConfigs.Select(a => $".{a.Format}").ToHashSet();
+            var generator = new RamlCollectionGenerator(allowedFormats);
             var raml = generator.Generate(documentation);
 
             Request.SetRamlVersion(RamlVerison);
