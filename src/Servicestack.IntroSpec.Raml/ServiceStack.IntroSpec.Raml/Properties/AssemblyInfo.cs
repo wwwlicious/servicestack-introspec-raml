@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ServiceStack.IntroSpec.Raml")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Generates RAML specifications for app host based on output of ServiceStack.IntroSpec plugin")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("MacLean Electrical")]
 [assembly: AssemblyProduct("Servicestack.IntroSpec.Raml")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
