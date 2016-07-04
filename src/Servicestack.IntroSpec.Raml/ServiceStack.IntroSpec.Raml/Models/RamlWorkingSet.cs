@@ -9,6 +9,9 @@ namespace ServiceStack.IntroSpec.Raml.Models
     using Servicestack.IntroSpec.Raml;
     using Extensions;
 
+    /// <summary>
+    /// Contains path and non path parameters to make generating RAML response cleaner.
+    /// </summary>
     public class RamlWorkingSet
     {
         public string BasePath { get; }

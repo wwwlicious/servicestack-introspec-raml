@@ -74,6 +74,15 @@
     <Compile Include="JsonSchema\JsonSchemaGenerator.cs" />
     <Compile Include="JsonSchema\JsonSchema.cs" />
     <Compile Include="JsonSchema\JsonSchemaTypeLookup.cs" />
+    <Compile Include="Models\RamlBody.cs" />
+    <Compile Include="Models\RamlDocumentation.cs" />
+    <Compile Include="Models\RamlMethod.cs" />
+    <Compile Include="Models\RamlNamedParameter.cs" />
+    <Compile Include="Models\RamlResource.cs" />
+    <Compile Include="Models\RamlResourceType.cs" />
+    <Compile Include="Models\RamlResponse.cs" />
+    <Compile Include="Models\RamlSchema.cs" />
+    <Compile Include="Models\RamlTrait.cs" />
     <Compile Include="Models\RamlWorkingSet.cs" />
     <Compile Include="RamlWorkingParameter.cs" />
     <Compile Include="v08\GenerationUtilities.cs" />
