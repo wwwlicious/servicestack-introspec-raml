@@ -20,7 +20,6 @@ namespace Servicestack.IntroSpec.Raml
     public class RamlCollectionGenerator
     {
         private readonly ILog log = LogManager.GetLogger(typeof(RamlCollectionGenerator));
-        private readonly HashSet<string> allowedFormats;
         private readonly IGenerationUtilities generationUtilities;
 
         public RamlCollectionGenerator(IGenerationUtilities generationUtilities)

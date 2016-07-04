@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>ServiceStack.IntroSpec.Raml</id>
+    <version>$version$</version>
+    <authors>Donald Gray (@donaldgray)</authors>
+    <description>ServiceStack plugin that uses output from ServiceStack.IntroSpec to generate documentation using RAML specification.</description>
+    <projectUrl>https://github.com/MacLeanElectrical/ServiceStack-IntroSpec-Raml</projectUrl>
+    <licenseUrl>https://opensource.org/licenses/MPL-2.0</licenseUrl>
+    <iconUrl>https://github.com/MacLeanElectrical/ServiceStack-IntroSpec/master/assets/logo_notext.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>servicestack microservices introspection documentation spec specification api raml rest</tags>
+    <releaseNotes>See github project for details</releaseNotes>
+    <dependencies>
+      <dependency id="ServiceStack" version="[4.0.56, 5)" />
+	  <dependency id="YamlDotNet" version="[3.9.0, 4)" />
+    </dependencies>
+  </metadata>
+</package>
