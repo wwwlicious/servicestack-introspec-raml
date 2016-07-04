@@ -112,6 +112,7 @@
     <Compile Include="RamlFormatTests.cs" />
     <Compile Include="RamlSpecConverterTests.cs" />
     <Compile Include="v08\GenerationUtilitiesTests.cs" />
+    <Compile Include="v08\RamlResponseUtilitiesTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Servicestack.IntroSpec.Raml\Servicestack.IntroSpec.Raml\ServiceStack.IntroSpec.Raml.csproj">

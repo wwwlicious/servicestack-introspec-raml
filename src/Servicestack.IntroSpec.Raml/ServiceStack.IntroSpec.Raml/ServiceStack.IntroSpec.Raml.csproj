@@ -91,6 +91,7 @@
     <Compile Include="Services\Raml08Service.cs" />
     <Compile Include="RamlFormat.cs" />
     <Compile Include="v08\IGenerationUtilities.cs" />
+    <Compile Include="v08\RamlResponseUtilities.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
