@@ -96,7 +96,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DTO\RamlRequestTests.cs" />
+    <Compile Include="Extensions\DictionaryExtensionTests.cs" />
     <Compile Include="Extensions\RequestExtensionsTests.cs" />
+    <Compile Include="Extensions\StatusCodeExtensionsTests.cs" />
     <Compile Include="Extensions\StringExtensionsTests.cs" />
     <Compile Include="Fixtures\AppHostCollection.cs" />
     <Compile Include="Fixtures\AppHostFixture.cs" />

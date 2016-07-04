@@ -88,6 +88,7 @@ namespace ServiceStack.IntroSpec.Raml.Models
         public Dictionary<int, RamlHasBody> Responses { get; set; }
     }
 
+    // TODO - rename
     public class RamlHasBody
     {
         public string Description { get; set; }

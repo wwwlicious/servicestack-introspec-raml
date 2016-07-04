@@ -10,6 +10,7 @@ namespace Servicestack.IntroSpec.Raml
     using ServiceStack;
     using ServiceStack.IntroSpec.Extensions;
     using ServiceStack.IntroSpec.Models;
+    using ServiceStack.IntroSpec.Raml.Extensions;
     using ServiceStack.IntroSpec.Raml.JsonSchema;
     using ServiceStack.IntroSpec.Raml.Models;
     using ServiceStack.IntroSpec.Raml.v08;
@@ -138,7 +139,8 @@ namespace Servicestack.IntroSpec.Raml
             foreach (var statusCode in action.StatusCodes)
             {
                 var ramlHasBody = new RamlHasBody { Description = statusCode.Description };
-                if (hasReturnType)
+
+                if (hasReturnType && statusCode.RenderReturnBody())
                 {
                     ramlHasBody.Body = new RamlBody
                     {

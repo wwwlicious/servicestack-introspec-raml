@@ -13,6 +13,8 @@ namespace ServiceStack.IntroSpec.Raml.Extensions
 
         public static void SafeAdd<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue value)
         {
+            dictionary.ThrowIfNull(nameof(dictionary));
+
             TValue val;
             if (!dictionary.TryGetValue(key, out val))
             {
