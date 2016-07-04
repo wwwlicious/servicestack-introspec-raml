@@ -156,7 +156,7 @@ namespace Servicestack.IntroSpec.Raml
             foreach (var pathParam in ramlWorkingSet.PathParams.Distinct())
                 uriParams.Add(pathParam.Key, pathParam.NamedParam);
 
-            if (!path.IsAutoRoute)
+            if (!path.IsAutoRoute && !path.IsFallback)
             {
                 log.Debug($"Path {path.Path} is auto route. Processing media type extensions");
                 generationUtilities.ProcessMediaTypeExtensions(action, uriParams);
