@@ -5,9 +5,10 @@
 namespace ServiceStack.IntroSpec.Raml.Tests
 {
     using System.IO;
+    using FakeItEasy;
     using FluentAssertions;
     using Host;
-    using Testing;
+    using Web;
     using Xunit;
 
     public class RamlFormatTests
@@ -15,13 +16,12 @@ namespace ServiceStack.IntroSpec.Raml.Tests
         [Fact]
         public void RegisterSerializer_RegistersContentType()
         {
-            const string mediaType = "raml+yaml";
-            var appHost = new BasicAppHost();
-            appHost.ContentTypes.ContentTypeFormats.ContainsKey(mediaType).Should().BeFalse();
-
+            var appHost = A.Fake<IAppHost>();
             RamlFormat.RegisterSerializer(appHost);
 
-            appHost.ContentTypes.ContentTypeFormats.ContainsKey(mediaType).Should().BeTrue();
+            A.CallTo(() =>
+                appHost.ContentTypes.Register("application/raml+yaml", A<StreamSerializerDelegate>.Ignored, null))
+             .MustHaveHappened();
         }
 
         [Fact]
