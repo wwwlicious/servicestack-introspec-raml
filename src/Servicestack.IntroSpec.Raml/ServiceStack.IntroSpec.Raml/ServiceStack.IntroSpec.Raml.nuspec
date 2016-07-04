@@ -13,7 +13,7 @@
     <releaseNotes>See github project for details</releaseNotes>
     <dependencies>
       <dependency id="ServiceStack" version="[4.0.56, 5)" />
-	  <dependency id="ServiceStack.IntroSpec" version="[4.0.5, 5)" />
+	  <dependency id="ServiceStack.IntroSpec" version="[4.0.19, 5)" />
 	  <dependency id="YamlDotNet" version="[3.9.0, 4)" />
     </dependencies>
   </metadata>
