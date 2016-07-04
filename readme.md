@@ -1,4 +1,6 @@
 # ![Logo](assets/logo_notext.png) ServiceStack.IntroSpec.Raml
+[![Build status](https://ci.appveyor.com/api/projects/status/i4b0rk1u80xd9taq/branch/master?svg=true)](https://ci.appveyor.com/project/MacLeanElectrical/servicestack-introspec-raml/branch/master)
+[![NuGet version](https://badge.fury.io/nu/ServiceStack.IntroSpec.raml.svg)](https://badge.fury.io/nu/ServiceStack.IntroSpec.raml)
 
 A plugin for [ServiceStack](https://servicestack.net/) that uses output from [ServiceStack.IntroSpec](https://github.com/MacLeanElectrical/servicestack-introspec) to generate documentation that complies to the [RAML](http://raml.org/) standard.
 
@@ -49,6 +51,5 @@ There are a number of areas that are not yet completed, primarily due to data no
 * Schemas are repeated and only rendered for JSON.
 * No security information is output.
 * Nested resources will all be rendered as main resources.
-* Nested level API's 
 
 The output is valid when tested using the [RAML Api-Console](https://github.com/mulesoft/api-console). There are no 'MUST' sections missing so the generated data should be usable in any RAML parser.
