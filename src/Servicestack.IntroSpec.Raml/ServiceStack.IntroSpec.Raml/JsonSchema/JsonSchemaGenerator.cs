@@ -42,7 +42,7 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
 
             foreach (var prop in propertiesWithResources)
             {
-                dictionary.SafeAdd(prop.EmbeddedResource.Title, prop.ConvertToDefinition());
+                dictionary.SafeAdd(prop.EmbeddedResource.TypeName, prop.ConvertToDefinition());
             }
 
             return dictionary;
@@ -71,19 +71,6 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
             }
         }
 
-        // TODO - kill this
-        public static IEnumerable<IApiResourceType> GetEmbeddedResources(ApiPropertyDocumention prop)
-        {
-            if (prop.EmbeddedResource != null)
-            {
-                yield return prop.EmbeddedResource;
-
-                if (!prop.EmbeddedResource.Properties.IsNullOrEmpty())
-                    foreach (var p in prop.EmbeddedResource.Properties.SelectMany(GetEmbeddedResources))
-                        yield return p;
-            }
-        }
-
         public static void PopulateBaseFields(IJsonSchemaBase obj, IEnumerable<ApiPropertyDocumention> properties)
         {
             var dict = new Dictionary<string, JsonSchemaProperty>();
@@ -99,7 +86,7 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
                 };
 
                 if (property.IsRequired ?? false)
-                    requiredList.Add(property.Title);
+                    requiredList.Add(property.Id);
 
                 // TODO Will need to know if this is referencing an external type first
                 if (property.EmbeddedResource != null)
@@ -107,7 +94,7 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
                     jsonProp.AddRef(property.EmbeddedResource.Title);
                 }
 
-                dict.Add(property.Title, jsonProp);
+                dict.Add(property.Id, jsonProp);
             }
 
             obj.Properties = dict.IsNullOrEmpty() ? null : dict;
