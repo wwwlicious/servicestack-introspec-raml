@@ -35,7 +35,6 @@ namespace ServiceStack.IntroSpec.Raml
             try
             {
                 var serializer = new Serializer(SerializationOptions.DisableAliases, new CamelCaseNamingConvention());
-                //serializer.RegisterTypeConverter(new ResourceDictionaryConverter());
 
                 if (dto is RamlSpec)
                     dto = (dto as RamlSpec).ConvertToSerializableDictionary();
