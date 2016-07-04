@@ -68,6 +68,8 @@
             DocumenterSettings.DefaultTags = new[] { "DefaultTag" };
             DocumenterSettings.FallbackNotes = "Default notes, set at a global level";
 
+            Plugins.Add(new CorsFeature());
+
             Plugins.Add(new ApiSpecFeature(config =>
                                            config.WithDescription(
                                                "This is a demo app host setup for testing documentation.")
