@@ -13,5 +13,10 @@ namespace ServiceStack.IntroSpec.Raml.Extensions
             var code = statusCode.Code;
             return code >= 200 && code < 300 && code != 204;
         }
+
+        public static string GetFullDescription(this StatusCode statusCode)
+            => string.IsNullOrEmpty(statusCode.Description)
+                   ? statusCode.Name
+                   : $"{statusCode.Name} - {statusCode.Description}";
     }
 }

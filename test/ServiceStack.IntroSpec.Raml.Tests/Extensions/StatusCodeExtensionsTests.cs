@@ -32,5 +32,19 @@ namespace ServiceStack.IntroSpec.Raml.Tests.Extensions
             var sc = (StatusCode)statusCode;
             sc.RenderReturnBody().Should().BeFalse();
         }
+
+        [Fact]
+        public void GetFullDescription_ReturnsName_IfNoDescription()
+        {
+            var sc = new StatusCode { Code = 500, Name = "Internal Server Error" };
+            sc.GetFullDescription().Should().Be("Internal Server Error");
+        }
+
+        [Fact]
+        public void GetFullDescription_ReturnsNameAndDescription_IfHasDescription()
+        {
+            var sc = new StatusCode { Code = 500, Name = "Internal Server Error", Description = "Uh-oh" };
+            sc.GetFullDescription().Should().Be("Internal Server Error - Uh-oh");
+        }
     }
 }

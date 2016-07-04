@@ -137,7 +137,7 @@ namespace Servicestack.IntroSpec.Raml
             var responses = new Dictionary<int, RamlHasBody>();
             foreach (var statusCode in action.StatusCodes)
             {
-                var ramlHasBody = new RamlHasBody { Description = statusCode.Description };
+                var ramlHasBody = new RamlHasBody { Description = statusCode.GetFullDescription() };
 
                 if (hasReturnType && statusCode.RenderReturnBody())
                 {
