@@ -15,6 +15,7 @@ namespace ServiceStack.IntroSpec.Raml.Models
 
         // https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md#resources-and-nested-resources
         // key = relative path
+        // TODO Implement
         public Dictionary<string, RamlResource> Resources { get; set; }
 
         // Key == name of Uri parameter

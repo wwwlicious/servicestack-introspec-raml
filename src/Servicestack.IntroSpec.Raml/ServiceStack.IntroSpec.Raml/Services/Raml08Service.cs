@@ -33,13 +33,15 @@ namespace Servicestack.IntroSpec.Raml.Services
             // TODO - Make this an in-proc service call so that it can be overriden
             var documentation = documentationProvider.GetApiDocumentation().Filter(request);
 
-            // Convert
+            // Set RAML version - picked up by renderer
+            Request.SetRamlVersion(RamlVerison);
+
+            // Convert IntroSpec object to RAML
             var allowedFormats =
                 HostContext.MetadataPagesConfig.AvailableFormatConfigs.Select(a => $".{a.Format}").ToHashSet();
             var generator = new RamlCollectionGenerator(allowedFormats);
             var raml = generator.Generate(documentation);
 
-            Request.SetRamlVersion(RamlVerison);
             return raml;
         }
     }

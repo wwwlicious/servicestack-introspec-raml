@@ -17,7 +17,7 @@ namespace ServiceStack.IntroSpec.Raml.v08
     {
         private readonly ILog log = LogManager.GetLogger(typeof(GenerationUtilities));
 
-        public Dictionary<string, string> FriendlyTypeNames = new Dictionary<string, string>
+        public readonly Dictionary<string, string> FriendlyTypeNames = new Dictionary<string, string>
         {
             { "String", "string" },
             { "Int64", "number" },

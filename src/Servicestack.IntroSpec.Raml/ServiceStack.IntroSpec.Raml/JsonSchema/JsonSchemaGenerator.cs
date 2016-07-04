@@ -31,12 +31,12 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
             return schema;
         }
 
-        public static Dictionary<string, JsonSchemaDefinition> GetDefinitions(IApiResourceType resource)
+        public static Dictionary<string, JsonDefinition> GetDefinitions(IApiResourceType resource)
         {
             // Get all embedded refs and convert to definitions
             var propertiesWithResources = resource.Properties.SelectMany(GetPropertiesWithEmbeddedResources).ToList();
             
-            var dictionary = new Dictionary<string, JsonSchemaDefinition>();
+            var dictionary = new Dictionary<string, JsonDefinition>();
             if (propertiesWithResources.IsNullOrEmpty())
                 return dictionary;
 
@@ -48,9 +48,9 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
             return dictionary;
         }
 
-        public static JsonSchemaDefinition ConvertToDefinition(this ApiPropertyDocumention property)
+        public static JsonDefinition ConvertToDefinition(this ApiPropertyDocumention property)
         {
-            var definition = new JsonSchemaDefinition();
+            var definition = new JsonDefinition();
             definition.Type = JsonSchemaTypeLookup.GetJsonTypes(property.ClrType, property.IsRequired ?? false);
 
             // Required is every prop that IsRequired = true
@@ -73,14 +73,14 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
 
         public static void PopulateBaseFields(IJsonSchemaBase obj, IEnumerable<ApiPropertyDocumention> properties)
         {
-            var dict = new Dictionary<string, JsonSchemaProperty>();
+            var dict = new Dictionary<string, JsonProperty>();
             var apiPropertyDocumentions = properties as ApiPropertyDocumention[] ?? properties.ToArray();
 
             var requiredList = new List<string>(apiPropertyDocumentions.Length);
 
             foreach (var property in apiPropertyDocumentions)
             {
-                var jsonProp = new JsonSchemaProperty
+                var jsonProp = new JsonProperty
                 {
                     Type = JsonSchemaTypeLookup.GetJsonTypes(property.ClrType, property.IsRequired ?? false)
                 };
@@ -88,11 +88,8 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
                 if (property.IsRequired ?? false)
                     requiredList.Add(property.Id);
 
-                // TODO Will need to know if this is referencing an external type first
                 if (property.EmbeddedResource != null)
-                {
                     jsonProp.AddRef(property.EmbeddedResource.Title);
-                }
 
                 dict.Add(property.Id, jsonProp);
             }

@@ -20,7 +20,7 @@ namespace ServiceStack.IntroSpec.Raml.v08
         {
             if (action.StatusCodes.IsNullOrEmpty())
             {
-                log.Info($"Resource {resource.Title} has no status codes set");
+                log.Info($"Resource {resource.Title} has no status codes.");
                 return null;
             }
 

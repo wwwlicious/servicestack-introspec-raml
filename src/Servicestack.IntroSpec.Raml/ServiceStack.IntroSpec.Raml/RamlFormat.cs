@@ -6,7 +6,6 @@ namespace ServiceStack.IntroSpec.Raml
 {
     using System;
     using System.IO;
-    using System.Text;
     using Extensions;
     using Logging;
     using Models;

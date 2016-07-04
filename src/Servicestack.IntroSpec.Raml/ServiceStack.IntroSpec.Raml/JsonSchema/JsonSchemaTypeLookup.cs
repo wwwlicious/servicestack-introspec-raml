@@ -14,7 +14,7 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
     {
         private static readonly ILog log = LogManager.GetLogger(typeof(JsonSchemaTypeLookup));
 
-        private static readonly Dictionary<string, string> friendlyTypeNames = new Dictionary<string, string>
+        private static readonly Dictionary<string, string> FriendlyTypeNames = new Dictionary<string, string>
         {
             { "String", "string" },
             { "Double", "number" },
@@ -39,7 +39,7 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
                                ? clrType.GetGenericArguments().First().Name
                                : clrType.Name;
 
-            var jsonTypeName = friendlyTypeNames.SafeGet(typeName, Fallback);
+            var jsonTypeName = FriendlyTypeNames.SafeGet(typeName, Fallback);
 
             log.Debug($"Got json type name {jsonTypeName} for clrType {clrType.Name}");
 
@@ -50,6 +50,6 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
         }
 
         public static string GetJsonType(string typeName)
-            => friendlyTypeNames.SafeGet(typeName, Fallback);
+            => FriendlyTypeNames.SafeGet(typeName, Fallback);
     }
 }

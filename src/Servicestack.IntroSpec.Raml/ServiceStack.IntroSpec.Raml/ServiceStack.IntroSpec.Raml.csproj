@@ -71,8 +71,12 @@
   <ItemGroup>
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\StatusCodeExtensions.cs" />
+    <Compile Include="JsonSchema\IJsonSchemaBase.cs" />
+    <Compile Include="JsonSchema\JsonDefinition.cs" />
     <Compile Include="JsonSchema\JsonSchemaGenerator.cs" />
     <Compile Include="JsonSchema\JsonSchema.cs" />
+    <Compile Include="JsonSchema\JsonProperty.cs" />
+    <Compile Include="JsonSchema\JsonSchemaReference.cs" />
     <Compile Include="JsonSchema\JsonSchemaTypeLookup.cs" />
     <Compile Include="Models\RamlBody.cs" />
     <Compile Include="Models\RamlDocumentation.cs" />

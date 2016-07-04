@@ -6,15 +6,10 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
 {
     using System.Collections.Generic;
     using System.Runtime.Serialization;
-    using Services;
-    using Text;
 
     [DataContract]
     public class JsonSchema : IJsonSchemaBase
     {
-        /*[DataMember(Name = "id")]
-        public string Id { get; set; } // Is this of use???*/
-
         [DataMember(Name = "title")]
         public string Title { get; set; }
 
@@ -32,13 +27,12 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
 
         [DataMember(Name = "definitions")]
         // Key = resource name
-        public Dictionary<string, JsonSchemaDefinition> Definitions { get; set; }
+        public Dictionary<string, JsonDefinition> Definitions { get; set; }
 
         [DataMember(Name = "properties")]
-        public Dictionary<string, JsonSchemaProperty> Properties { get; set; }
+        public Dictionary<string, JsonProperty> Properties { get; set; }
 
-        //patternProperties
-        //additionalProperties <- always false??
+        // TODO patternProperties
 
         private const string DefaultSchema = "http://json-schema.org/draft-04/schema#";
         public JsonSchema() : this(DefaultSchema) { }
@@ -48,88 +42,4 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
             Schema = schema;
         }
     }
-
-    public class JsonSchemaDefinition : IJsonSchemaBase
-    {
-        public IEnumerable<string> Type { get; set; }
-        public IEnumerable<string> Required { get; set; }
-
-        public Dictionary<string, JsonSchemaProperty> Properties { get; set; }
-
-        // OneOf
-        // Pattern
-    }
-
-    public interface IJsonSchemaBase
-    {
-        IEnumerable<string> Required { get; set; }
-
-        Dictionary<string, JsonSchemaProperty> Properties { get; set; }
-    }
-
-    public class JsonSchemaProperty
-    {
-        public IEnumerable<string> Type { get; set; }
-
-        public JsonSchemaRef Items { get; set; } // this has $ref inside
-
-        public void AddRef(string refName) => Items = JsonSchemaRef.Create(refName);
-    }
-
-    [DataContract]
-    public class JsonSchemaRef
-    {
-        [DataMember(Name = "$ref")]
-        public string Ref { get; private set; }
-
-        // TODO Sanitise where the refName is used and also handle remote definition references
-        public static JsonSchemaRef Create(string refName) => new JsonSchemaRef { Ref = $"#/definitions/{refName}" };
-    }
-
-    public static class TestRunner
-    {
-        public static void DoStuff()
-        {
-            var documentationProvider = new ApiDocumentationProvider();
-            var documentation = documentationProvider.GetApiDocumentation();
-
-            using (var config = JsConfig.BeginScope())
-            {
-                config.EmitCamelCaseNames = true;
-
-                foreach (var apiResourceDocumentation in documentation.Resources)
-                {
-                    var schema = JsonSchemaGenerator.Generate(apiResourceDocumentation);
-                    var x = schema.ToJson();
-                }
-
-                /*var schema = new JsonSchema();
-                schema.Type = "object";
-                schema.Required = new[] { "Hi" };
-                schema.Properties = new Dictionary<string, JsonSchemaProperty>();
-                schema.Properties.Add("Hi",
-                    new JsonSchemaProperty
-                    {
-                        Type = new List<string> { "string", "null" }
-                    });
-
-                var defs = new List<JsonSchemaDefinition>();
-                var anotherClass = new JsonSchemaDefinition
-                {
-                    Type = new[] { "object", "null" },
-                    Properties = new Dictionary<string, JsonSchemaProperty>
-                    {
-                        { "foo", new JsonSchemaProperty { Type = new[] { "integer" } } }
-                    }
-                };
-                defs.Add(anotherClass);
-                schema.Definitions = defs;*/
-
-                
-            }
-        }
-    }
 }
-
-// Type can be enum
-// Type for definition is []
