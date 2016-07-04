@@ -45,7 +45,7 @@ namespace ServiceStack.IntroSpec.Raml.v08
             {
                 DisplayName = property.Title,
                 Description = property.Description,
-                Type = FriendlyTypeNames.SafeGet(property.ClrType.Name, (string) null) // TODO handle other types
+                Type = FriendlyTypeNames.SafeGet(property.ClrType.Name, (string) null)
             };
 
             if (property.AllowMultiple ?? false)
@@ -85,11 +85,10 @@ namespace ServiceStack.IntroSpec.Raml.v08
             foreach (var property in resource.Properties ?? Enumerable.Empty<ApiPropertyDocumention>())
             {
                 var isUriParam = pathParams.Contains(property.Id, StringComparer.OrdinalIgnoreCase);
-                var typeName = FriendlyTypeNames.SafeGet(property.ClrType.Name, (string) null);
 
                 var namedParam = GenerateUriParameter(property);
 
-                var ramlParam = RamlWorkingParameter.Create(property.Id, typeName, isUriParam, namedParam);
+                var ramlParam = RamlWorkingParameter.Create(property.Id, namedParam.Type, isUriParam, namedParam);
                 data.Add(ramlParam);
             }
 
@@ -107,7 +106,10 @@ namespace ServiceStack.IntroSpec.Raml.v08
         public Dictionary<string, RamlNamedParameter> GetQueryStringLookup(ApiResourceDocumentation resource, RamlWorkingSet ramlWorkingSet)
         {
             if (resource.Properties.IsNullOrEmpty()) return null;
-            return ramlWorkingSet.NonPathParams.ToDictionary(param => param.Key, param => param.NamedParam);
+
+            return ramlWorkingSet.NonPathParams.Where(p => !string.IsNullOrEmpty(p.NamedParam.Type)).ToDictionary(
+                param => param.Key,
+                param => param.NamedParam);
         }
 
         /// <summary>

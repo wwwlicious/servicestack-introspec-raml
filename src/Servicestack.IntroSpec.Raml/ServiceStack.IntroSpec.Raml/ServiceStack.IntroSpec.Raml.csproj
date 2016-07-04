@@ -69,6 +69,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="JsonSchema\JsonSchemaGenerator.cs" />
     <Compile Include="JsonSchema\JsonSchema.cs" />
     <Compile Include="JsonSchema\JsonSchemaTypeLookup.cs" />

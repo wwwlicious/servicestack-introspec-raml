@@ -6,6 +6,7 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
 {
     using System.Collections.Generic;
     using System.Linq;
+    using Extensions;
     using IntroSpec.Extensions;
     using IntroSpec.Models;
 
@@ -41,7 +42,7 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
 
             foreach (var prop in propertiesWithResources)
             {
-                dictionary.Add(prop.EmbeddedResource.Title, prop.ConvertToDefinition());
+                dictionary.SafeAdd(prop.EmbeddedResource.Title, prop.ConvertToDefinition());
             }
 
             return dictionary;

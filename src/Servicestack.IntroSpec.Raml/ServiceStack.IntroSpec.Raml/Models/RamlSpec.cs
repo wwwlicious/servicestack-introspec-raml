@@ -74,19 +74,23 @@ namespace ServiceStack.IntroSpec.Raml.Models
         public RamlMethod Connect => Methods.SafeGet("connect", (RamlMethod)null);
     }
 
-    public class RamlMethod
+    public class RamlMethod : RamlHasBody
     {
-        public string Description { get; set; }
-
         public string[] Protocols { get; set; }
 
         public NamedParameterMap QueryParameters { get; set; }
 
-        // TODO Body
-        // TODO Responses
         // TODO Headers
         // Key == full header name (x-my-header)
         public NamedParameterMap Headers { get; set; }
+
+        // Key == status code (200, 201 etc)
+        public Dictionary<int, RamlHasBody> Responses { get; set; }
+    }
+
+    public class RamlHasBody
+    {
+        public string Description { get; set; }
 
         public RamlBody Body { get; set; }
     }
