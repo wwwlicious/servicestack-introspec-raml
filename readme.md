@@ -36,6 +36,19 @@ public override void Configure(Container container)
 ```
 
 ## Services
+
 The plugin registers a service at `/spec/raml/0.8`. Calling this service will return output with content-type of `application/raml+yaml` that conforms to v0.8 of the RAML specification.
 
 *Support for v1.0 will be added at a later date*
+
+## Restrictions
+
+There are a number of areas that are not yet completed, primarily due to data not being surface via ServiceStack.IntroSpec. 
+
+* Named Parameters - no support for Pattern, MinLength, MaxLength, Example or Default.
+* Schemas are repeated and only rendered for JSON.
+* No security information is output.
+* Nested resources will all be rendered as main resources.
+* Nested level API's 
+
+The output is valid when tested using the [RAML Api-Console](https://github.com/mulesoft/api-console). There are no 'MUST' sections missing so the generated data should be usable in any RAML parser.
