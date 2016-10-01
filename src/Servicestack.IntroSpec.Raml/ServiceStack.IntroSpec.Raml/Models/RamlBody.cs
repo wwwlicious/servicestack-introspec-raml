@@ -12,6 +12,6 @@ namespace ServiceStack.IntroSpec.Raml.Models
         public RamlSchema JsonSchema { get; set; }
 
         // TODO - XML?
-        // TODO - render sampel body content
+        // TODO - render sample body content
     }
 }

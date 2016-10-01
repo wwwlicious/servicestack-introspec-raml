@@ -9,7 +9,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.Extensions
     using Raml.Extensions;
     using Xunit;
 
-    public class DictionaryExtensionTests
+    public class DictionaryExtensionsTests
     {
         [Fact]
         public void SafeAdd_AddsIfKeyNotPresent()

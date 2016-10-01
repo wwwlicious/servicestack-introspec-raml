@@ -33,10 +33,13 @@ namespace ServiceStack.IntroSpec.Raml
 
             try
             {
-                var serializer = new Serializer(SerializationOptions.DisableAliases, new CamelCaseNamingConvention());
+                var serializer =
+                    new SerializerBuilder().DisableAliases()
+                        .WithNamingConvention(new CamelCaseNamingConvention())
+                        .Build();
 
                 if (dto is RamlSpec)
-                    dto = (dto as RamlSpec).ConvertToSerializableDictionary();
+                    dto = ((RamlSpec)dto).ConvertToSerializableDictionary();
 
                 using (var writer = new StreamWriter(outputStream))
                 {
