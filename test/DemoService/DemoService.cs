@@ -114,7 +114,7 @@
         public Name[] TheirNames { get; set; }
     }
 
-    /// <summary>This comment won't make it's way to documentation as there's a AbstractTypeSpec implementation of this.</summary>
+    /// <summary>The name of the person</summary>
     /// <remarks>Description of Name class from XML comment</remarks>
     public class Name
     {

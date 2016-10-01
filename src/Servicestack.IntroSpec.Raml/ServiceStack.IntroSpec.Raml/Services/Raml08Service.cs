@@ -31,7 +31,7 @@ namespace Servicestack.IntroSpec.Raml.Services
         {
             // Get the filtered documentation object
             // TODO - Make this an in-proc service call so that it can be overriden
-            var documentation = documentationProvider.GetApiDocumentation().Filter(request);
+            var documentation = documentationProvider.GetApiDocumentation(Request.GetApplicationUrl()).Filter(request);
 
             // Set RAML version - picked up by renderer
             Request.SetRamlVersion(RamlVerison);

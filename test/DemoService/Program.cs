@@ -20,7 +20,7 @@
         static void Main(string[] args)
         {
             var serviceUrl = "http://127.0.0.1:8090/";
-            var x = new AppHost(serviceUrl).Init().Start("http://*:8090/");
+            var x = new AppHost().Init().Start("http://*:8090/");
             $"ServiceStack SelfHost listening at {serviceUrl} ".Print();
             Process.Start(serviceUrl);
 
@@ -36,21 +36,12 @@
 
     public class AppHost : AppSelfHostBase
     {
-        private readonly string serviceUrl;
-
-        public AppHost(string serviceUrl) : base("DemoDocumentationService", typeof(DemoService).Assembly)
+        public AppHost() : base("DemoDocumentationService", typeof(DemoService).Assembly)
         {
-            this.serviceUrl = serviceUrl;
         }
 
         public override void Configure(Container container)
         {
-            SetConfig(new HostConfig
-            {
-                WebHostUrl = serviceUrl,
-                ApiVersion = "2.0"
-            });
-
             LogManager.LogFactory = new ConsoleLogFactory();
 
             SetupPlugins();

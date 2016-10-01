@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\DemoService.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -49,8 +50,8 @@
       <HintPath>..\..\src\Servicestack.IntroSpec.Raml\packages\ServiceStack.Interfaces.4.5.0\lib\portable-wp80+sl5+net45+win8+wpa81+monotouch+monoandroid+xamarin.ios10\ServiceStack.Interfaces.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="ServiceStack.IntroSpec, Version=4.0.27.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\src\Servicestack.IntroSpec.Raml\packages\ServiceStack.IntroSpec.4.0.27\lib\net45\ServiceStack.IntroSpec.dll</HintPath>
+    <Reference Include="ServiceStack.IntroSpec, Version=4.0.29.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\src\Servicestack.IntroSpec.Raml\packages\ServiceStack.IntroSpec.4.0.29\lib\net45\ServiceStack.IntroSpec.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ServiceStack.Text, Version=4.5.0.0, Culture=neutral, processorArchitecture=MSIL">

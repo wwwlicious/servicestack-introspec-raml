@@ -16,7 +16,7 @@ namespace Servicestack.IntroSpec.Raml
         public void Register(IAppHost appHost)
         {
             if (!appHost.Plugins.Any(p => p is ApiSpecFeature))
-                throw new ArgumentException("The ApiSpecFeature must be enabled to use the RAML Feature");
+                throw new ArgumentException("The ApiSpecFeature from ServiceStack.IntroSpec must be enabled to use the RAML Feature");
 
             RamlFormat.RegisterSerializer(appHost);
             RegisterServices(appHost);

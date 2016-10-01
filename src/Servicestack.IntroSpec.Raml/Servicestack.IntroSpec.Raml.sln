@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceStack.IntroSpec.Raml", "Servicestack.IntroSpec.Raml\ServiceStack.IntroSpec.Raml.csproj", "{F52609A4-1A2A-4415-9EB7-5832EDF7D6BB}"
 EndProject
@@ -12,6 +12,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoService", "..\..\test\DemoService\DemoService.csproj", "{C993ACF3-C077-4A08-B772-F1DC2C28C955}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceStack.IntroSpec.Raml.Tests", "..\..\test\ServiceStack.IntroSpec.Raml.Tests\ServiceStack.IntroSpec.Raml.Tests.csproj", "{9866AC50-2C93-443A-92E8-1C5486F09A61}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{84921EBF-6958-4653-BCC5-56F2E9AFAC9D}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\readme.md = ..\..\readme.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
