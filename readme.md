@@ -1,15 +1,15 @@
 # ![Logo](assets/logo_notext.png) ServiceStack.IntroSpec.Raml
-[![Build status](https://ci.appveyor.com/api/projects/status/i4b0rk1u80xd9taq/branch/master?svg=true)](https://ci.appveyor.com/project/MacLeanElectrical/servicestack-introspec-raml/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/i4b0rk1u80xd9taq/branch/master?svg=true)](https://ci.appveyor.com/project/wwwlicious/servicestack-introspec-raml/branch/master)
 [![NuGet version](https://badge.fury.io/nu/ServiceStack.IntroSpec.raml.svg)](https://badge.fury.io/nu/ServiceStack.IntroSpec.raml)
 
-A plugin for [ServiceStack](https://servicestack.net/) that uses output from [ServiceStack.IntroSpec](https://github.com/MacLeanElectrical/servicestack-introspec) 
+A plugin for [ServiceStack](https://servicestack.net/) that uses output from [ServiceStack.IntroSpec](https://github.com/Mwwwlicious/servicestack-introspec) 
 to generate documentation that complies to the [RAML](http://raml.org/) standard.
 
 ---
 
 ![Formats](assets/MultiFormat-RAML.png)
 
-The [ServiceStack.IntroSpec](https://github.com/MacLeanElectrical/servicestack-introspec) plugin uses introspection on a 
+The [ServiceStack.IntroSpec](https://github.com/wwwlicious/servicestack-introspec) plugin uses introspection on a 
 number of different sources to generate a set of universal documentation DTOs. ServiceStack.IntroSpec.Raml converts 
 these DTOs to the [RAML 0.8](https://github.com/raml-org/raml-spec/blob/master/versions/raml-08/raml-08.md) specification.
 

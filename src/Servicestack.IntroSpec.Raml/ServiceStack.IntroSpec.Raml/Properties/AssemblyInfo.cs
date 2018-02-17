@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("ServiceStack.IntroSpec.Raml")]
 [assembly: AssemblyDescription("Generates RAML specifications for app host based on output of ServiceStack.IntroSpec plugin")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("MacLean Electrical")]
+[assembly: AssemblyCompany("wwwlicious")]
 [assembly: AssemblyProduct("Servicestack.IntroSpec.Raml")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
