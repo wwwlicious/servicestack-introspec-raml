@@ -28,7 +28,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
         public void GenerateUriParameters_Throws_IfPropertyNull()
         {
             Action action = () => generator.GenerateUriParameter(null);
-            action.ShouldThrow<ArgumentException>().WithMessage("Value cannot be null.\r\nParameter name: property");
+            action.Should().Throw<ArgumentException>().WithMessage("Value cannot be null.\r\nParameter name: property");
         }
 
         [Fact]
@@ -87,7 +87,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
             var prop = new ApiPropertyDocumention { ClrType = typeof(int), Contraints = null };
 
             Action action = () => generator.GenerateUriParameter(prop);
-            action.ShouldNotThrow<ArgumentNullException>();
+            action.Should().NotThrow<ArgumentNullException>();
         }
 
         [Fact]
@@ -140,14 +140,14 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
         public void GenerateWorkingSet_Throws_IfPathNullOrEmpty(string path)
         {
             Action action = () => generator.GenerateWorkingSet(path, new ApiResourceDocumentation());
-            action.ShouldThrow<ArgumentException>().WithMessage("Value cannot be null.\r\nParameter name: path");
+            action.Should().Throw<ArgumentException>().WithMessage("Value cannot be null.\r\nParameter name: path");
         }
 
         [Fact]
         public void GenerateWorkingSet_Throws_IfResourceNull()
         {
             Action action = () => generator.GenerateWorkingSet("/api", null);
-            action.ShouldThrow<ArgumentException>().WithMessage("Value cannot be null.\r\nParameter name: resource");
+            action.Should().Throw<ArgumentException>().WithMessage("Value cannot be null.\r\nParameter name: resource");
         }
 
         [Fact]
@@ -248,14 +248,14 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
             var uriParams = new Dictionary<string, RamlNamedParameter>();
 
             Action action = () => generator.ProcessMediaTypeExtensions(null, uriParams);
-            action.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: action");
+            action.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: action");
         }
 
         [Fact]
         public void ProcessMediaTypeExtensions_HandlesEmptyDictionary()
         {
             Action action = () => generator.ProcessMediaTypeExtensions(new ApiAction(), null);
-            action.ShouldNotThrow<ArgumentException>();
+            action.Should().NotThrow<ArgumentException>();
         }
 
         [Fact]

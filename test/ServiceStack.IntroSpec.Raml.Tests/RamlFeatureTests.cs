@@ -28,7 +28,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests
         public void Register_Throws_IfNoMetadata()
         {
             Action action = () => feature.Register(A.Fake<IAppHost>());
-            action.ShouldThrow<ArgumentException>()
+            action.Should().Throw<ArgumentException>()
                   .WithMessage("The ApiSpecFeature from ServiceStack.IntroSpec must be enabled to use the RAML Feature");
         }
 

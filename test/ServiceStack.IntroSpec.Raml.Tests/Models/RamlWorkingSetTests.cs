@@ -18,7 +18,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.Models
         public void Ctor_ThrowsIfNullOrEmptyPath(string path)
         {
             Action action = () => new RamlWorkingSet(path);
-            action.ShouldThrow<ArgumentException>();
+            action.Should().Throw<ArgumentException>();
         }
 
         [Theory]

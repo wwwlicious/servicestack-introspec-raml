@@ -27,7 +27,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests
         public void Ctor_Throws_IfIGenerationUtilitiesNull()
         {
             Action action = () => new RamlCollectionGenerator((IGenerationUtilities) null);
-            action.ShouldThrow<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: generationUtilities");
+            action.Should().Throw<ArgumentNullException>().WithMessage("Value cannot be null.\r\nParameter name: generationUtilities");
         }
 
         [Fact]
