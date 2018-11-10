@@ -31,9 +31,9 @@ var rootPath            = MakeAbsolute(Directory("./"));
 var releaseNotesPath = rootPath.CombineWithFilePath("CHANGELOG.md");
 
 // project specific
-var solutionFile        = srcDir + File("servicestack.discovery.consul.sln");
+var solutionFile        = srcDir + File("Servicestack.IntroSpec.Raml.sln");
 var gitHubRepositoryOwner = "wwwlicious";
-var gitHubRepositoryName = "servicestack-discovery-consul";
+var gitHubRepositoryName = "servicestack-introspec-raml";
 
 var isLocalBuild = BuildSystem.IsLocalBuild;
 var isPullRequest = BuildSystem.AppVeyor.Environment.PullRequest.IsPullRequest;
