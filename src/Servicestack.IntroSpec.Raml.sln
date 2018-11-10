@@ -9,13 +9,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{1FD94448-1
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "demo", "demo", "{4AE9F815-89A8-4C56-82BD-F81044287EF1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoService", "..\..\test\DemoService\DemoService.csproj", "{C993ACF3-C077-4A08-B772-F1DC2C28C955}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoService", "test\DemoService\DemoService.csproj", "{C993ACF3-C077-4A08-B772-F1DC2C28C955}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceStack.IntroSpec.Raml.Tests", "..\..\test\ServiceStack.IntroSpec.Raml.Tests\ServiceStack.IntroSpec.Raml.Tests.csproj", "{9866AC50-2C93-443A-92E8-1C5486F09A61}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServiceStack.IntroSpec.Raml.Tests", "test\ServiceStack.IntroSpec.Raml.Tests\ServiceStack.IntroSpec.Raml.Tests.csproj", "{9866AC50-2C93-443A-92E8-1C5486F09A61}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{84921EBF-6958-4653-BCC5-56F2E9AFAC9D}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\readme.md = ..\..\readme.md
+		..\readme.md = ..\readme.md
 	EndProjectSection
 EndProject
 Global

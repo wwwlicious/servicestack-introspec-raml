@@ -29,7 +29,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests
         {
             Action action = () => feature.Register(A.Fake<IAppHost>());
             action.Should().Throw<ArgumentException>()
-                  .WithMessage("The ApiSpecFeature from ServiceStack.IntroSpec must be enabled to use the RAML Feature");
+                  .WithMessage("The IntroSpecFeature plugin from ServiceStack.IntroSpec must be enabled to use the RAML Feature");
         }
 
         [Fact]

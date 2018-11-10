@@ -48,10 +48,10 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
             return dictionary;
         }
 
-        public static JsonDefinition ConvertToDefinition(this ApiPropertyDocumention property)
+        public static JsonDefinition ConvertToDefinition(this ApiPropertyDocumentation property)
         {
             var definition = new JsonDefinition();
-            definition.Type = JsonSchemaTypeLookup.GetJsonTypes(property.ClrType, property.IsRequired ?? false);
+            definition.Type = JsonSchemaTypeLookup.GetJsonTypes(property.ClrType.OriginalType, property.IsRequired ?? false);
 
             // Required is every prop that IsRequired = true
             PopulateBaseFields(definition, property.EmbeddedResource.Properties);
@@ -59,7 +59,7 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
             return definition;
         }
 
-        public static IEnumerable<ApiPropertyDocumention> GetPropertiesWithEmbeddedResources(ApiPropertyDocumention prop)
+        public static IEnumerable<ApiPropertyDocumentation> GetPropertiesWithEmbeddedResources(ApiPropertyDocumentation prop)
         {
             if (prop.EmbeddedResource != null)
             {
@@ -71,18 +71,18 @@ namespace ServiceStack.IntroSpec.Raml.JsonSchema
             }
         }
 
-        public static void PopulateBaseFields(IJsonSchemaBase obj, IEnumerable<ApiPropertyDocumention> properties)
+        public static void PopulateBaseFields(IJsonSchemaBase obj, IEnumerable<ApiPropertyDocumentation> properties)
         {
             var dict = new Dictionary<string, JsonProperty>();
-            var apiPropertyDocumentions = properties as ApiPropertyDocumention[] ?? properties.ToArray();
+            var ApiPropertyDocumentations = properties as ApiPropertyDocumentation[] ?? properties.ToArray();
 
-            var requiredList = new List<string>(apiPropertyDocumentions.Length);
+            var requiredList = new List<string>(ApiPropertyDocumentations.Length);
 
-            foreach (var property in apiPropertyDocumentions)
+            foreach (var property in ApiPropertyDocumentations)
             {
                 var jsonProp = new JsonProperty
                 {
-                    Type = JsonSchemaTypeLookup.GetJsonTypes(property.ClrType, property.IsRequired ?? false)
+                    Type = JsonSchemaTypeLookup.GetJsonTypes(property.ClrType.OriginalType, property.IsRequired ?? false)
                 };
 
                 if (property.IsRequired ?? false)

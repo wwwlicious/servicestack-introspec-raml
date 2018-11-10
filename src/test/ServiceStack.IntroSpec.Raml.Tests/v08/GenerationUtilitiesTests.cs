@@ -11,6 +11,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
     using IntroSpec.Models;
     using Raml.Models;
     using Raml.v08;
+    using ServiceStack.IntroSpec.Extensions;
     using Xunit;
 
     public class GenerationUtilitiesTests
@@ -36,7 +37,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
         {
             const string displayName = "foo";
             const string description = "bar";
-            var prop = new ApiPropertyDocumention { Description = description, Title = displayName, ClrType = typeof(string) };
+            var prop = new ApiPropertyDocumentation { Description = description, Title = displayName, ClrType = typeof(string).ToApiClrType() };
 
             var result = generator.GenerateUriParameter(prop);
             result.Description.Should().Be(description);
@@ -54,7 +55,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
         [InlineData(typeof(GenerationUtilities), null)]
         public void GenerateUriParameters_SetsType(Type type, string expected)
         {
-            var prop = new ApiPropertyDocumention { ClrType = type };
+            var prop = new ApiPropertyDocumentation { ClrType = type.ToApiClrType() };
             var result = generator.GenerateUriParameter(prop);
             result.Type.Should().Be(expected);
         }
@@ -65,7 +66,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
         [InlineData(true, true)]
         public void GenerateUriParameters_SetsAllowMultiple(bool? allowMultiple, bool repeat)
         {
-            var prop = new ApiPropertyDocumention { ClrType = typeof(int), AllowMultiple = allowMultiple };
+            var prop = new ApiPropertyDocumentation { ClrType = typeof(int).ToApiClrType(), AllowMultiple = allowMultiple };
             var result = generator.GenerateUriParameter(prop);
             result.Repeat.Should().Be(repeat);
         }
@@ -76,7 +77,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
         [InlineData(true, true)]
         public void GenerateUriParameters_SetsRequired(bool? isRequired, bool required)
         {
-            var prop = new ApiPropertyDocumention { ClrType = typeof(int), IsRequired = isRequired };
+            var prop = new ApiPropertyDocumentation { ClrType = typeof(int).ToApiClrType(), IsRequired = isRequired };
             var result = generator.GenerateUriParameter(prop);
             result.Required.Should().Be(required);
         }
@@ -84,7 +85,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
         [Fact]
         public void GenerateUriParameters_HandlesNullConstraints()
         {
-            var prop = new ApiPropertyDocumention { ClrType = typeof(int), Contraints = null };
+            var prop = new ApiPropertyDocumentation { ClrType = typeof(int).ToApiClrType(), Constraints = null };
 
             Action action = () => generator.GenerateUriParameter(prop);
             action.Should().NotThrow<ArgumentNullException>();
@@ -104,7 +105,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
                 Max = max
             };
 
-            var prop = new ApiPropertyDocumention { ClrType = typeof(int), Contraints = constraint };
+            var prop = new ApiPropertyDocumentation { ClrType = typeof(int).ToApiClrType(), Constraints = constraint };
             var result = generator.GenerateUriParameter(prop);
 
             result.Enum.Should().BeEquivalentTo(validValues);
@@ -126,7 +127,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
                 Max = max
             };
 
-            var prop = new ApiPropertyDocumention { ClrType = typeof(int), Contraints = constraint };
+            var prop = new ApiPropertyDocumentation { ClrType = typeof(int).ToApiClrType(), Constraints = constraint };
             var result = generator.GenerateUriParameter(prop);
 
             result.Enum.Should().BeNullOrEmpty();
@@ -170,8 +171,8 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
                     Properties =
                         new[]
                         {
-                            new ApiPropertyDocumention { ClrType = typeof(string) },
-                            new ApiPropertyDocumention { ClrType = typeof(string) }
+                            new ApiPropertyDocumentation { ClrType = typeof(string).ToApiClrType() },
+                            new ApiPropertyDocumentation { ClrType = typeof(string).ToApiClrType() }
                         }
                 });
             (ws.PathParams.Count() + ws.NonPathParams.Count()).Should().Be(2);
@@ -237,7 +238,7 @@ namespace ServiceStack.IntroSpec.Raml.Tests.v08
         [Fact]
         public void ProcessQueryStrings_ReturnsNull_IfEmptyProperties()
         {
-            var apiResourceDocumentation = new ApiResourceDocumentation { Properties = new ApiPropertyDocumention[0] };
+            var apiResourceDocumentation = new ApiResourceDocumentation { Properties = new ApiPropertyDocumentation[0] };
             generator.GetQueryStringLookup(apiResourceDocumentation, new RamlWorkingSet("/api"))
                 .Should().BeNull();
         }

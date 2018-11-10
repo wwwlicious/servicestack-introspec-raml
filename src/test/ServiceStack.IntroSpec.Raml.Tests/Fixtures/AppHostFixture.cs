@@ -28,18 +28,21 @@ namespace ServiceStack.IntroSpec.Raml.Tests.Fixtures
             {
                 TestMode = true,
                 Config = hostConfig,
-                ServiceName = ServiceName
+                ServiceName = ServiceName,
             };
 
-            var apiSpecConfig = new ApiSpecConfig
+            AppHost.ConfigureAppHost = host =>
             {
-                Contact = new ApiContact { Email = "ronald.macdonald@macdonalds.hq", Name = "ronnie mcd" },
-                Description = "great api"
+                hostConfig.WebHostUrl = WebHostUrl;
+                host.Plugins.Add(new MetadataFeature());
+                host.Plugins.Add(new IntroSpecFeature
+                {
+                    ContactName = "test contact",
+                    ContactEmail = "bob@any.com",
+                    Description = "great api"
+                });
             };
-
-            AppHost.Plugins.Add(new ApiSpecFeature(config => apiSpecConfig));
             AppHost.Init();
-            AppHost.Config.WebHostUrl = WebHostUrl;
         }
 
         public void Dispose() => AppHost?.Dispose();

@@ -115,7 +115,7 @@ namespace Servicestack.IntroSpec.Raml
                 JsonSchema = new RamlSchema { Schema = JsonSchemaGenerator.Generate(resource).ToJson() }
             };
 
-            var hasRequestBody = action.Verb.HasRequestBody();
+            var hasRequestBody = HttpUtils.HasRequestBody(action.Verb);
             if (!hasRequestBody)
                 method.QueryParameters = generationUtilities.GetQueryStringLookup(resource, ramlWorkingSet);
 

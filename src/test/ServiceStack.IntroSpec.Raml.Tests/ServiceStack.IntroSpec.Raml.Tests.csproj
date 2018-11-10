@@ -7,18 +7,14 @@
         <PackageReference Include="FakeItEasy.Analyzer.CSharp" Version="4.9.1" />
         <PackageReference Include="FluentAssertions" Version="5.5.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-        <PackageReference Include="ServiceStack" Version="4.5.0" />
-        <PackageReference Include="ServiceStack.IntroSpec" Version="4.0.29" />
+        <PackageReference Include="ServiceStack" Version="5.0.0" />
+        <PackageReference Include="ServiceStack.Interfaces" Version="5.0.0" />
+        <PackageReference Include="ServiceStack.IntroSpec" Version="4.0.52" />
         <PackageReference Include="xunit" Version="2.4.1" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
         <PackageReference Include="YamlDotNet" Version="5.2.1" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\..\src\Servicestack.IntroSpec.Raml\Servicestack.IntroSpec.Raml\ServiceStack.IntroSpec.Raml.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-      <Reference Include="ServiceStack.Interfaces, Version=4.0.0.0, Culture=neutral, PublicKeyToken=e06fbc6124f57c43">
-        <HintPath>..\..\src\Servicestack.IntroSpec.Raml\packages\ServiceStack.Interfaces.4.5.0\lib\portable-wp80+sl5+net45+win8+wpa81+monotouch+monoandroid+xamarin.ios10\ServiceStack.Interfaces.dll</HintPath>
-      </Reference>
+      <ProjectReference Include="..\..\Servicestack.IntroSpec.Raml\ServiceStack.IntroSpec.Raml.csproj" />
     </ItemGroup>
 </Project>

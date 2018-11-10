@@ -1,0 +1,50 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net452</TargetFrameworks>
+    <Configurations>Debug;Release</Configurations>
+    <Title>ServiceStack.IntroSpec.Raml</Title>
+    <Description>ServiceStack plugin that uses output from ServiceStack.IntroSpec to generate documentation using RAML specification.</Description>
+    <Authors>Donald Gray (@donaldgray);Scott Mackay (@wwwlicious)</Authors>
+    <Owners>Scott Mackay (@wwwlicious)</Owners>
+    <Copyright>Copyright (c) wwwlicious 2016 - Present</Copyright>
+    <RequireLicenseAcceptance>false</RequireLicenseAcceptance>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <NoWarn>CS1591</NoWarn>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <PackageId>ServiceStack.IntroSpec.Raml</PackageId>
+    <Version>$(Version)</Version>
+    <PackageVersion>$(PackageVersion)</PackageVersion>
+    <PackageOutputPath>$(PackageOutputPath)</PackageOutputPath>
+    <PackageLicenseUrl>https://opensource.org/licenses/MPL-2.0</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/wwwlicious/ServiceStack-IntroSpec-Raml</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/wwwlicious/ServiceStack-IntroSpec/master/assets/logo_notext.png</PackageIconUrl>
+    <ReleaseNotes>https://github.com/wwwlicious/ServiceStack-IntroSpec-Raml/releases</ReleaseNotes>
+    <PackageTags>servicestack microservices introspection documentation spec specification api raml rest</PackageTags>
+    <RepositoryUrl>https://github.com/wwwlicious/ServiceStack-IntroSpec-Raml</RepositoryUrl>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+    <DefineConstants>NETSTANDARD2_0;</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)'=='net452'">
+    <DefineConstants>NET452;</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\ServiceStack.IntroSpec.Raml.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net452|AnyCPU'">
+    <DocumentationFile>bin\Release\net452\ServiceStack.IntroSpec.Raml.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="GitLink" Version="3.1.0" PrivateAssets="All" />
+    <PackageReference Include="ServiceStack" Version="5.0.0" />
+    <PackageReference Include="ServiceStack.IntroSpec" Version="4.0.52" />
+    <PackageReference Include="ServiceStack.Text" Version="5.0.0" />
+    <PackageReference Include="YamlDotNet" Version="5.2.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Web" Condition="'$(TargetFramework)' == 'net452'" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+  </ItemGroup>
+</Project>

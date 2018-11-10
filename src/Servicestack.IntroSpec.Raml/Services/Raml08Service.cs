@@ -16,7 +16,7 @@ namespace Servicestack.IntroSpec.Raml.Services
 #endif
     public class Raml08Service : Service
     {
-        private const string RamlVerison = "#%RAML 0.8";
+        private const string RamlVersion = "#%RAML 0.8";
 
         private readonly IApiDocumentationProvider documentationProvider;
 
@@ -31,10 +31,18 @@ namespace Servicestack.IntroSpec.Raml.Services
         {
             // Get the filtered documentation object
             // TODO - Make this an in-proc service call so that it can be overriden
-            var documentation = documentationProvider.GetApiDocumentation(Request.GetApplicationUrl()).Filter(request);
-
+            //var appBaseUrl = Request.GetApplicationUrl();
+            
+#if NETFRAMEWORK
+            var appBaseUrl = Request.GetApplicationUrl();
+#endif
+#if NETSTANDARD2_0
+            var appBaseUrl = Request.GetApplicationUrl();
+#endif
+            
             // Set RAML version - picked up by renderer
-            Request.SetRamlVersion(RamlVerison);
+            Request.SetRamlVersion(RamlVersion);
+            var documentation = documentationProvider.GetApiDocumentation(appBaseUrl).Filter(request);
 
             // Convert IntroSpec object to RAML
             var allowedFormats =

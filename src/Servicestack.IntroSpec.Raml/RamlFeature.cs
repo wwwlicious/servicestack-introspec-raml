@@ -15,8 +15,8 @@ namespace Servicestack.IntroSpec.Raml
     {
         public void Register(IAppHost appHost)
         {
-            if (!appHost.Plugins.Any(p => p is ApiSpecFeature))
-                throw new ArgumentException("The ApiSpecFeature from ServiceStack.IntroSpec must be enabled to use the RAML Feature");
+            if (!appHost.Plugins.Any(p => p is ApiSpecFeature || p is IntroSpecFeature))
+                throw new ArgumentException("The IntroSpecFeature plugin from ServiceStack.IntroSpec must be enabled to use the RAML Feature");
 
             RamlFormat.RegisterSerializer(appHost);
             RegisterServices(appHost);
@@ -24,11 +24,8 @@ namespace Servicestack.IntroSpec.Raml
         
         private void RegisterServices(IAppHost appHost)
         {
-            var metadataFeature = appHost.GetPlugin<MetadataFeature>();
-
             appHost.RegisterService<Raml08Service>();
-
-            metadataFeature.AddPluginLink(Constants.Version08Uri, "RAML 0.8");
+            appHost.GetPlugin<MetadataFeature>()?.AddPluginLink(Constants.Version08Uri, "RAML 0.8");
         }
     }
 }

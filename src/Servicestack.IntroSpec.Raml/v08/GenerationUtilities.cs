@@ -37,7 +37,7 @@ namespace ServiceStack.IntroSpec.Raml.v08
             this.allowedFormats = allowedFormats ?? new HashSet<string>();
         }
 
-        public RamlNamedParameter GenerateUriParameter(ApiPropertyDocumention property)
+        public RamlNamedParameter GenerateUriParameter(ApiPropertyDocumentation property)
         {
             property.ThrowIfNull(nameof(property));
 
@@ -54,19 +54,19 @@ namespace ServiceStack.IntroSpec.Raml.v08
             if (property.IsRequired ?? false)
                 uriParameter.Required = true;
 
-            if (property.Contraints == null) return uriParameter;
+            if (property.Constraints == null) return uriParameter;
 
-            switch (property.Contraints.Type)
+            switch (property.Constraints.Type)
             {
                 case ConstraintType.List:
-                    uriParameter.Enum = property.Contraints.Values;
+                    uriParameter.Enum = property.Constraints.Values;
                     break;
                 case ConstraintType.Range:
-                    uriParameter.Minimum = property.Contraints.Min;
-                    uriParameter.Maximum = property.Contraints.Max;
+                    uriParameter.Minimum = property.Constraints.Min;
+                    uriParameter.Maximum = property.Constraints.Max;
                     break;
                 default:
-                    log.Info($"Constraint type {property.Contraints.Type} unknown");
+                    log.Info($"Constraint type {property.Constraints.Type} unknown");
                     break;
             }
 
@@ -82,7 +82,7 @@ namespace ServiceStack.IntroSpec.Raml.v08
 
             var pathParams = path.GetPathParams() ?? Enumerable.Empty<string>();
 
-            foreach (var property in resource.Properties ?? Enumerable.Empty<ApiPropertyDocumention>())
+            foreach (var property in resource.Properties ?? Enumerable.Empty<ApiPropertyDocumentation>())
             {
                 var isUriParam = pathParams.Contains(property.Id, StringComparer.OrdinalIgnoreCase);
 
