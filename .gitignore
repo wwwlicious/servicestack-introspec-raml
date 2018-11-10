@@ -25,6 +25,7 @@ bld/
 # Visual Studio 2015 cache/options directory
 .vs/
 .idea/
+tools/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
