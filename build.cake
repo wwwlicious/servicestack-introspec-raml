@@ -2,9 +2,7 @@
 #tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
 #tool "nuget:?package=gitreleasemanager&version=0.7.1"
 #tool "nuget:?package=gitlink&version=2.4.0"
-#tool "nuget:?package=MSBuild.SonarQube.Runner.Tool&version=4.3.1"
 #addin "nuget:?package=Cake.Incubator&version=3.0.0"
-#addin "nuget:?package=Cake.Sonar&version=1.1.9"
 
 ///////////////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -31,7 +29,7 @@ var rootPath            = MakeAbsolute(Directory("./"));
 var releaseNotesPath = rootPath.CombineWithFilePath("CHANGELOG.md");
 
 // project specific
-var solutionFile        = srcDir + File("Servicestack.IntroSpec.Raml.sln");
+var solutionFile        = srcDir + File("servicestack.introspec.raml.sln");
 var gitHubRepositoryOwner = "wwwlicious";
 var gitHubRepositoryName = "servicestack-introspec-raml";
 
@@ -48,7 +46,6 @@ var shouldPublishGitHub = shouldPublishNuGet;
 
 var gitVersionResults   = GitVersion(new GitVersionSettings { UpdateAssemblyInfo = false });
 var semVersion          = $"{gitVersionResults.MajorMinorPatch}.{buildNumber}";
-var sonarSettingsFile   = File("./SonarQube.Analysis.xml");
 
 Information("SemverVersion -> {0}", semVersion);
 
@@ -89,19 +86,6 @@ Task("Build")
     Information("Building {0}", solutionFile);
     var msbuildBinaryLogFile = artifactsDir + new FilePath(solutionFile.Path.GetFilenameWithoutExtension() + ".binlog");
 
-            var key = solutionFile.Path.GetFilenameWithoutExtension().ToString();
-            var branchName = gitVersionResults.BranchName;
-
-            var sonarSettings = new SonarBeginSettings{
-                SettingsFile = MakeAbsolute(sonarSettingsFile.Path).FullPath,
-                Branch = branchName,
-                Key = key,
-                Name = key,
-                Version = semVersion.ToString(),
-                // DotCoverReportsPath = dotCoverReportFilePath,
-                // XUnitReportsPath = xUnitReportFile
-            };
-    SonarBegin(sonarSettings);
     MSBuild(solutionFile.Path, settings => {
         settings
             .SetConfiguration(configuration)
@@ -123,7 +107,6 @@ Task("Build")
                 return arguments;
             };
     });
-    SonarEnd(new SonarEndSettings());
 });
 
 Task("Test")
@@ -215,7 +198,6 @@ Task("Publish-Nuget-Packages")
         NuGetPush(nupkgFile, new NuGetPushSettings {
             Source = nugetSourceUrl,
             ApiKey = nugetApiKey,
-
         });
     }
 });
